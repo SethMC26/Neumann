@@ -1,4 +1,9 @@
-# Neumann Readme
+# Neumann
+
+## Team Members 
+- Joseph King - Project Manager and Software Engineer
+- Michael Plescia - Front end UI Designer
+- Seth Holtzman - Technical Lead and Backend Software Engineer
 
 ## Team Charter 
 https://drive.google.com/drive/folders/1CM16wybFIhSwVYIqdR9js68r6Z8kbevn
