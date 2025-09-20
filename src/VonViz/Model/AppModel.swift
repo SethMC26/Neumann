@@ -8,10 +8,15 @@ enum Axis {
     case z
 }
 
+/// AppModel is the model for the App and main model for the controllers of the app to interact with.
 class AppModel {
+    /// Map of axis and header associated with axis to display
     private var axes: [Axis: String] = [ : ]
-    private var data: DataFrame? = nil
+    /// All headers of data
     private var headers: [String] = []
+    // Data that the user has imported, nil is none has been imported yet
+    private var data: DataFrame? = nil
+    // Data that is being displayed currented(sliced dataframe from data)
     private var currDataDisplayed: DataFrame? = nil
 
     // TO:DO add visualization
@@ -45,15 +50,17 @@ class AppModel {
         
         axes = [:] // reset loaded axis
         currDataDisplayed = nil // reset current data being displayed
-        
-        //set headers
-        
     }
     
+    /// Gets all of the headers of `self.data`
+    /// - Returns: Headers of `self.data`
     func getHeaders() -> [String]? {
         return headers
     }
     
+    
+    /// Renders the data frame
+    /// - Throws: AppError if no dataset loaded, x, y, z axis not set yet
     func render() throws {
         // load data frame and check if loaded
         guard let df = data else {
