@@ -6,22 +6,50 @@
 //
 
 import SwiftUI
+import Charts
 import RealityKit
 import RealityKitContent
 
+struct Penguin: Identifiable {
+    let id: Int
+    let flipperLength: Double
+    let weight: Double
+    let beakLength: Double
+}
+
+
+let penguins: [Penguin] = [
+    Penguin(id: 0, flipperLength: 197, weight: 4.2, beakLength: 59),
+    Penguin(id: 1, flipperLength: 220, weight: 100.7, beakLength: 48),
+    Penguin(id: 2, flipperLength: 235, weight: 5.8, beakLength: 200),
+    ]
+
 struct ContentView: View {
-    private var model: AppModel = AppModel()
+    @StateObject private var model: AppModel = AppModel()
     @State var enlarge = false
     @State private var selectedFile: URL?
     @State private var isImporterPresented = false
-
-
+    
     var body: some View {
+        
         VStack {
             Text("VonViz App")
                 .font(.largeTitle)
                 .foregroundColor(.black)
                 .padding()
+            Group {
+                if #available(visionOS 26.0, *) {
+                    if !model.rows.isEmpty {
+                        Chart3D(model.rows) {
+                            PointMark(
+                                x: .value(model.getAxisHeader(axisToGet: <#T##Axis#>.x), $0.x),
+                                y: .value(model.getAxisHeader(axisToGet: <#T##Axis#>.y), $0.y),
+                                z: .value(model.getAxisHeader(axisToGet: <#T##Axis#>.z), $0.z)
+                            )
+                        }
+                    }
+                }
+            }
             Button {
                 enlarge.toggle()
             } label: {

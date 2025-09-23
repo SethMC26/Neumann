@@ -8,16 +8,26 @@ enum Axis {
     case z
 }
 
+struct Row : Identifiable {
+    let id: Int
+    let x: Double
+    let y: Double
+    let z: Double
+}
+
 /// AppModel is the model for the App and main model for the controllers of the app to interact with.
-class AppModel {
-    /// Map of axis and header associated with axis to display
-    private var axes: [Axis: String] = [ : ]
-    /// All headers of data
-    private var headers: [String] = []
+class AppModel: ObservableObject{
     // Data that the user has imported, nil is none has been imported yet
     private var data: DataFrame? = nil
     // Data that is being displayed currented(sliced dataframe from data)
     private var currDataDisplayed: DataFrame? = nil
+    
+    /// Map of axis and header associated with axis to display
+    private var axes: [Axis: String] = [ : ]
+    /// All headers of data
+    private var headers: [String] = []
+    
+    @Published var rows: [Row] = []
 
     // TO:DO add visualization
     //private var vis : Object
@@ -44,12 +54,29 @@ class AppModel {
     func ingestFile(file: URL) throws {
         
         data = try DataFrame(contentsOfCSVFile: file)
-        
+        rows = []
+
         // get all the headers for each columns if one is nil
         headers = data?.columns.map {$0.name} ?? []
         
-        axes = [:] // reset loaded axis
-        currDataDisplayed = nil // reset current data being displayed
+        //basic temporary code will need to update header setting later
+        
+        // check if we have less than three columns error out
+        if headers.count < 3 {
+            self.axes.removeAll()
+            self.currDataDisplayed = nil
+            throw AppError.notEnoughColumns
+        }
+        
+        
+        self.axes = [.x: headers[0], .y: headers[1], .z: headers[2]]
+        self.currDataDisplayed = data?[[headers[0], headers[1], headers[2]]]  // slice by names
+        
+        if let df = currDataDisplayed {
+            for data in df.rows {
+                rows.append(Row(data.index, df[headers[0]], df[headers[1], df[headers[2]]))
+            }
+        }
     }
     
     /// Gets all of the headers of `self.data`
@@ -61,7 +88,7 @@ class AppModel {
     
     /// Renders the data frame
     /// - Throws: AppError if no dataset loaded, x, y, z axis not set yet
-    func render() throws {
+    func render() throws -> {
         // load data frame and check if loaded
         guard let df = data else {
             throw AppError.noLoadedDataset
@@ -80,14 +107,13 @@ class AppModel {
             throw AppError.zNotSet
         }
         
-        currDataDisplayed = df[[xLabel, yLabel, zLabel]]
-        
-        //todo add other visualization rendering of 3d objectsas
+       
     }
 }
 
 enum AppError: Error {
     case noLoadedDataset
+    case notEnoughColumns
     case xNotSet
     case yNotSet
     case zNotSet
