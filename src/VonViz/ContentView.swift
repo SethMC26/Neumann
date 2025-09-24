@@ -38,13 +38,18 @@ struct ContentView: View {
                 .foregroundColor(.black)
                 .padding()
             Group {
+                
                 if #available(visionOS 26.0, *) {
                     if !model.rows.isEmpty {
+                        let xlabel = model.getAxisHeader(axisToGet: .x) ?? ""
+                        let yLabel = model.getAxisHeader(axisToGet: .y) ?? ""
+                        let zLabel = model.getAxisHeader(axisToGet: .z) ?? ""
+                        
                         Chart3D(model.rows) {
                             PointMark(
-                                x: .value(model.getAxisHeader(axisToGet: <#T##Axis#>.x), $0.x),
-                                y: .value(model.getAxisHeader(axisToGet: <#T##Axis#>.y), $0.y),
-                                z: .value(model.getAxisHeader(axisToGet: <#T##Axis#>.z), $0.z)
+                                x: .value(xlabel, $0.x),
+                                y: .value(yLabel, $0.y),
+                                z: .value(zLabel, $0.z)
                             )
                         }
                     }

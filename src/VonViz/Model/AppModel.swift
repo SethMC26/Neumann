@@ -55,7 +55,7 @@ class AppModel: ObservableObject{
         
         data = try DataFrame(contentsOfCSVFile: file)
         rows = []
-
+        
         // get all the headers for each columns if one is nil
         headers = data?.columns.map {$0.name} ?? []
         
@@ -72,11 +72,24 @@ class AppModel: ObservableObject{
         self.axes = [.x: headers[0], .y: headers[1], .z: headers[2]]
         self.currDataDisplayed = data?[[headers[0], headers[1], headers[2]]]  // slice by names
         
+        var newRows: [Row] = []
         if let df = currDataDisplayed {
             for data in df.rows {
-                rows.append(Row(data.index, df[headers[0]], df[headers[1], df[headers[2]]))
+                //attempt to read data in each column as a double
+                guard
+                    let colOne = data[headers[0]] as? Double,
+                    let colTwo = data[headers[1]] as? Double,
+                    let colThree = data[headers[3]] as? Double
+                else {
+                    continue // skip row if we cannot unwrap it safely
+                }
+                newRows.append(Row(id: data.index, x:  colOne, y:  colTwo, z: colThree))
             }
         }
+        
+        //change state of row at the end once all rows loaded
+        //UI is waiting for a state change on rows so we only want to change once its ready
+        rows = newRows
     }
     
     /// Gets all of the headers of `self.data`
@@ -88,7 +101,7 @@ class AppModel: ObservableObject{
     
     /// Renders the data frame
     /// - Throws: AppError if no dataset loaded, x, y, z axis not set yet
-    func render() throws -> {
+    func render() throws {
         // load data frame and check if loaded
         guard let df = data else {
             throw AppError.noLoadedDataset
