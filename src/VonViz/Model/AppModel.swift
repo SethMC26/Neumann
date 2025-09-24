@@ -69,16 +69,16 @@ class AppModel: ObservableObject{
         }
         
         
-        self.axes = [.x: headers[0], .y: headers[1], .z: headers[2]]
-        self.currDataDisplayed = data?[[headers[0], headers[1], headers[2]]]  // slice by names
+        self.axes = [.x: headers[1], .y: headers[2], .z: headers[3]]
+        self.currDataDisplayed = data?[[headers[1], headers[2], headers[3]]]  // slice by names
         
         var newRows: [Row] = []
         if let df = currDataDisplayed {
             for data in df.rows {
                 //attempt to read data in each column as a double
                 guard
-                    let colOne = data[headers[0]] as? Double,
-                    let colTwo = data[headers[1]] as? Double,
+                    let colOne = data[headers[1]] as? Double,
+                    let colTwo = data[headers[2]] as? Double,
                     let colThree = data[headers[3]] as? Double
                 else {
                     continue // skip row if we cannot unwrap it safely
