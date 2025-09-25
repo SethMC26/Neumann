@@ -17,6 +17,8 @@ struct Row : Identifiable {
 
 /// AppModel is the model for the App and main model for the controllers of the app to interact with.
 class AppModel: ObservableObject{
+    /// limit to data that can be displayed
+    private let DISPLAY_LIMIT: Int = 100
     // Data that the user has imported, nil is none has been imported yet
     private var data: DataFrame? = nil
     // Data that is being displayed currented(sliced dataframe from data)
@@ -28,7 +30,7 @@ class AppModel: ObservableObject{
     private var headers: [String] = []
     
     @Published var rows: [Row] = []
-
+    
     // TO:DO add visualization
     //private var vis : Object
     
@@ -54,7 +56,9 @@ class AppModel: ObservableObject{
     func ingestFile(file: URL) throws {
         
         data = try DataFrame(contentsOfCSVFile: file)
+        currDataDisplayed = nil
         rows = []
+        axes.removeAll()
         
         // get all the headers for each columns if one is nil
         headers = data?.columns.map {$0.name} ?? []
@@ -63,33 +67,28 @@ class AppModel: ObservableObject{
         
         // check if we have less than three columns error out
         if headers.count < 3 {
-            self.axes.removeAll()
-            self.currDataDisplayed = nil
             throw AppError.notEnoughColumns
         }
         
+        guard let df = data else { throw AppError.noLoadedDataset }
+        var col_names: [String] = []
         
-        self.axes = [.x: headers[1], .y: headers[2], .z: headers[3]]
-        self.currDataDisplayed = data?[[headers[1], headers[2], headers[3]]]  // slice by names
-        
-        var newRows: [Row] = []
-        if let df = currDataDisplayed {
-            for data in df.rows {
-                //attempt to read data in each column as a double
-                guard
-                    let colOne = data[headers[1]] as? Double,
-                    let colTwo = data[headers[2]] as? Double,
-                    let colThree = data[headers[3]] as? Double
-                else {
-                    continue // skip row if we cannot unwrap it safely
-                }
-                newRows.append(Row(id: data.index, x:  colOne, y:  colTwo, z: colThree))
+        //attempt to automatically set axes
+        for col in df.columns {
+            let type = col.wrappedElementType
+            if type == Int.self || type == Float.self || type == Double.self {
+                col_names.append(col.name)
+            }
+            
+            if col_names.count == 3 {
+                axes = [Axis.x: col_names[0], Axis.y: col_names[1], Axis.z: col_names[2]]
+                self.currDataDisplayed = df[[col_names[0], col_names[1], col_names[2]]]
+                break
             }
         }
         
-        //change state of row at the end once all rows loaded
-        //UI is waiting for a state change on rows so we only want to change once its ready
-        rows = newRows
+        try render()
+        
     }
     
     /// Gets all of the headers of `self.data`
@@ -120,7 +119,35 @@ class AppModel: ObservableObject{
             throw AppError.zNotSet
         }
         
+        var newRows: [Row] = []
+        
+        for data in df.rows {
+            //attempt to read data in each column as a double
+            let colOne = try asDouble(data[xLabel])
+            let colTwo = try asDouble(data[yLabel])
+            let colThree = try asDouble(data[zLabel])
+            
+            newRows.append(Row(id: data.index, x:  colOne, y:  colTwo, z: colThree))
+            
+            if newRows.count > DISPLAY_LIMIT {
+                break
+            }
+        }
+        
+        print(newRows)
+        //change state of row at the end once all rows loaded
+        //UI is waiting for a state change on rows so we only want to change once its ready
+        rows = newRows
        
+    }
+    
+    private func asDouble(_ value: Any?) throws -> Double {
+        switch value {
+        case let d as Double: return d
+        case let i as Int:    return Double(i)
+        case let f as Float:  return Double(f)
+        default: throw AppError.internalStateError
+        }
     }
 }
 
@@ -130,6 +157,7 @@ enum AppError: Error {
     case xNotSet
     case yNotSet
     case zNotSet
+    case internalStateError
 }
 
 
