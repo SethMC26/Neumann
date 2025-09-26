@@ -50,7 +50,7 @@ struct ContentView: View {
                 }
                 // If model loaded add buttons for each axis
                 if !model.headers.isEmpty {
-                    //print(model.headers)
+                    // X axis selector
                     Menu {
                         ForEach(model.headers, id: \.self) { header in
                             Button(header) {
@@ -66,6 +66,7 @@ struct ContentView: View {
                         Label("Set X Axis", systemImage: "x.circle")
                             .labelStyle(.titleAndIcon)
                     }
+                    // Y Axis selector
                     Menu {
                         ForEach(model.headers, id: \.self) { header in
                             Button(header) {
@@ -81,6 +82,7 @@ struct ContentView: View {
                         Label("Set Y Axis", systemImage: "y.circle")
                             .labelStyle(.titleAndIcon)
                     }
+                    // Z Axis Selector 
                     Menu {
                         ForEach(model.headers, id: \.self) { header in
                             Button(header) {
@@ -100,15 +102,17 @@ struct ContentView: View {
             }
             if #available(visionOS 26.0, *) {
                 if !model.rows.isEmpty {
-                    let xLabel: String = model.getAxisHeader(axisToGet: .x) ?? ""
-                    let yLabel: String = model.getAxisHeader(axisToGet: .y) ?? ""
-                    let zLabel: String = model.getAxisHeader(axisToGet: .z) ?? ""
+                    // attempt to get the string for each axis if not able use placeholder
+                    let xLabel: String = model.getAxisHeader(axisToGet: .x) ?? "X Axis"
+                    let yLabel: String = model.getAxisHeader(axisToGet: .y) ?? "Y Axis"
+                    let zLabel: String = model.getAxisHeader(axisToGet: .z) ?? "Z Axis"
                     
                     //attempt to get axis range but fall back to a default range
                     let xDom = (try? model.getAxisRange(axis: .x)) ?? (-50...50)
                     let yDom = (try? model.getAxisRange(axis: .y)) ?? (-50...50)
                     let zDom = (try? model.getAxisRange(axis: .z)) ?? (-50...50)
-
+                    
+                    //add chart with rows, labels and scale 
                     let chart = Chart3D(model.rows) { (row: Row) in
                         PointMark(
                             x: .value(xLabel, row.x),

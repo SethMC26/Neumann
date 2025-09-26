@@ -130,21 +130,24 @@ class AppModel: ObservableObject{
 
     }
     
+    /// Get a closed range from min to max of a columns values for a particular axis
+    /// - Parameter axis: Axis to get range for
+    /// - Returns: Closed Range of doubles for that access
     func getAxisRange(axis: Axis) throws -> ClosedRange<Double> {
         //should never happen button should only appear once dataset loaded
         guard let df = data else {
                 throw AppError.noLoadedDataset
             }
-        //should never happen as axes should always be set before getting range
+        //should never happen since we automatically set x, y, z axes when loading dataset
         guard let columnName = axes[axis] else {
-            throw AppError.internalStateError
+            throw AppError.noLoadedDataset
         }
         
         //get column
         let col = df[columnName]
         
         //cast column to correct type
-        //columns should always have type int double or float 
+        //columns should always have type int double or float type since those are the ones we provide headers for
         switch col.wrappedElementType {
         case is Double.Type:
             let typedCol: Column<Double> = df[columnName, Double.self]
