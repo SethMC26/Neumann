@@ -10,20 +10,6 @@ import Charts
 import RealityKit
 import RealityKitContent
 
-struct Penguin: Identifiable {
-    let id: Int
-    let flipperLength: Double
-    let weight: Double
-    let beakLength: Double
-}
-
-
-let penguins: [Penguin] = [
-    Penguin(id: 0, flipperLength: 197, weight: 4.2, beakLength: 59),
-    Penguin(id: 1, flipperLength: 220, weight: 100.7, beakLength: 48),
-    Penguin(id: 2, flipperLength: 235, weight: 5.8, beakLength: 200),
-    ]
-
 struct ContentView: View {
     @StateObject private var model: AppModel = AppModel()
     @State private var selectedFile: URL?
