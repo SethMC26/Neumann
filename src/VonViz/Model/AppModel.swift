@@ -130,6 +130,59 @@ class AppModel: ObservableObject{
 
     }
     
+    func getAxisRange(axis: Axis) throws -> ClosedRange<Double> {
+        //should never happen button should only appear once dataset loaded
+        guard let df = data else {
+                throw AppError.noLoadedDataset
+            }
+        //should never happen as axes should always be set before getting range
+        guard let columnName = axes[axis] else {
+            throw AppError.internalStateError
+        }
+        
+        //get column
+        let col = df[columnName]
+        
+        //cast column to correct type
+        //columns should always have type int double or float 
+        switch col.wrappedElementType {
+        case is Double.Type:
+            let typedCol: Column<Double> = df[columnName, Double.self]
+            guard
+                let min = typedCol.min(),
+                let max = typedCol.max()
+            else {
+                throw AppError.internalStateError
+            }
+            
+            return min...max
+        case is Int.Type:
+            let typedCol: Column<Int> = df[columnName, Int.self]
+            guard
+                let min = typedCol.min(),
+                let max = typedCol.max()
+            else {
+                throw AppError.internalStateError
+            }
+            
+            return Double(min)...Double(max)
+        case is Float.Type:
+            let typedCol: Column<Float> = df[columnName, Float.self]
+            guard
+                let min = typedCol.min(),
+                let max = typedCol.max()
+            else {
+                throw AppError.internalStateError
+            }
+            
+            return Double(min)...Double(max)
+        default:
+            throw AppError.internalStateError
+        }
+
+        
+    }
+    
     /// chatGPT generated function to return a number value as a double
     private func asDouble(_ value: Any?) throws -> Double {
         switch value {

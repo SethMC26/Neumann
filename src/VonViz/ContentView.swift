@@ -41,7 +41,7 @@ struct ContentView: View {
                 // example file importer
                 .fileImporter(
                     isPresented: $isImporterPresented,
-                    allowedContentTypes: [.commaSeparatedText, .plainText],
+                    allowedContentTypes: [.commaSeparatedText],
                     allowsMultipleSelection: false
                 ) {
                     //Logic is simply for testing NEEDS TO BE CLEANED UP
@@ -117,9 +117,12 @@ struct ContentView: View {
                     let xLabel: String = model.getAxisHeader(axisToGet: .x) ?? ""
                     let yLabel: String = model.getAxisHeader(axisToGet: .y) ?? ""
                     let zLabel: String = model.getAxisHeader(axisToGet: .z) ?? ""
-
                     
-                    // 2) Build the chart in a small, explicit closure
+                    //attempt to get axis range but fall back to a default range
+                    let xDom = (try? model.getAxisRange(axis: .x)) ?? (-50...50)
+                    let yDom = (try? model.getAxisRange(axis: .y)) ?? (-50...50)
+                    let zDom = (try? model.getAxisRange(axis: .z)) ?? (-50...50)
+
                     let chart = Chart3D(model.rows) { (row: Row) in
                         PointMark(
                             x: .value(xLabel, row.x),
@@ -130,9 +133,9 @@ struct ContentView: View {
                     .chartXAxisLabel(xLabel)
                     .chartYAxisLabel(yLabel)
                     .chartZAxisLabel(zLabel)
-                    .chartXScale(domain: -50...150)
-                    .chartYScale(domain: -50...150)
-                    .chartZScale(domain: -50...150)
+                    .chartXScale(domain: xDom, range: .plotDimension(padding: 100))
+                    .chartYScale(domain: yDom, range: .plotDimension(padding: 100))
+                    .chartZScale(domain: zDom, range: .plotDimension(padding: 100))
                     
                     chart.frame(width: 1500, height: 1500, alignment: .center)
                 }
