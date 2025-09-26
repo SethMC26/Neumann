@@ -32,37 +32,84 @@ struct ContentView: View {
     var body: some View {
         
         VStack {
-            Text("VonViz App")
-                .font(.largeTitle)
-                .foregroundColor(.black)
-                .padding()
-            // THIS BUTTON WAS CHATGPT GENERERATED AND ONLY FOR TESTING!!!
-            // WILL NEED TO UPDATED AND REMOVED
-            Button("Choose CSV File") {
-                isImporterPresented = true
-            }
-            // example file importer
-            .fileImporter(
-                isPresented: $isImporterPresented,
-                allowedContentTypes: [.commaSeparatedText, .plainText],
-                allowsMultipleSelection: false
-            ) {
-                //Logic is simply for testing NEEDS TO BE CLEANED UP
-                result in
-                switch result {
-                case .success(let urls):
-                    if let url = urls.first {
-                        selectedFile = url
-                        print("Picked file: \(url)")
-                        do {
-                            try self.model.ingestFile(file: url)
+            HStack {
+                // THIS BUTTON WAS CHATGPT GENERERATED AND ONLY FOR TESTING!!!
+                // WILL NEED TO UPDATED AND REMOVED
+                Button("Choose CSV File") {
+                    isImporterPresented = true
+                }
+                // example file importer
+                .fileImporter(
+                    isPresented: $isImporterPresented,
+                    allowedContentTypes: [.commaSeparatedText, .plainText],
+                    allowsMultipleSelection: false
+                ) {
+                    //Logic is simply for testing NEEDS TO BE CLEANED UP
+                    result in
+                    switch result {
+                    case .success(let urls):
+                        if let url = urls.first {
+                            selectedFile = url
+                            print("Picked file: \(url)")
+                            do {
+                                try self.model.ingestFile(file: url)
+                            }
+                            catch{
+                                print("Error ingesting file \(error)")
+                            }
                         }
-                        catch{
-                            print("Error ingesting file \(error)")
-                        }
+                    case .failure(let error):
+                        print("Failed to pick file: \(error)")
                     }
-                case .failure(let error):
-                    print("Failed to pick file: \(error)")
+                }
+                // If model loaded add buttons for each axis
+                if !model.headers.isEmpty {
+                    //print(model.headers)
+                    Menu {
+                        ForEach(model.headers, id: \.self) { header in
+                            Button(header) {
+                                do {
+                                    try model.setAxis(axisToSet: .x, header: header)
+                                }
+                                catch {
+                                    print("Error setting axis : \(error)")
+                                }
+                            }
+                        }
+                    } label: {
+                        Label("Set X Axis", systemImage: "x.circle")
+                            .labelStyle(.titleAndIcon)
+                    }
+                    Menu {
+                        ForEach(model.headers, id: \.self) { header in
+                            Button(header) {
+                                do {
+                                    try model.setAxis(axisToSet: .y, header: header)
+                                }
+                                catch {
+                                    print("Error setting axis : \(error)")
+                                }
+                            }
+                        }
+                    } label: {
+                        Label("Set Y Axis", systemImage: "y.circle")
+                            .labelStyle(.titleAndIcon)
+                    }
+                    Menu {
+                        ForEach(model.headers, id: \.self) { header in
+                            Button(header) {
+                                do {
+                                    try model.setAxis(axisToSet: .z, header: header)
+                                }
+                                catch {
+                                    print("Error setting axis : \(error)")
+                                }
+                            }
+                        }
+                    } label: {
+                        Label("Set Z Axis", systemImage: "z.circle")
+                            .labelStyle(.titleAndIcon)
+                    }
                 }
             }
             if #available(visionOS 26.0, *) {
