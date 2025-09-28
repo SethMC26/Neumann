@@ -6,76 +6,139 @@
 //
 
 import SwiftUI
+import Charts
 import RealityKit
 import RealityKitContent
 
 struct ContentView: View {
-    private var model: AppModel = AppModel()
-    @State var enlarge = false
+    @StateObject private var model: AppModel = AppModel()
     @State private var selectedFile: URL?
     @State private var isImporterPresented = false
-
-
+    
     var body: some View {
+        
         VStack {
-            Text("VonViz App")
-                .font(.largeTitle)
-                .foregroundColor(.black)
-                .padding()
-            Button {
-                enlarge.toggle()
-            } label: {
-                Text(enlarge ? "Reduce RealityView Content" : "Enlarge RealityView Content")
-            }
-            .animation(.none, value: 0)
-            .fontWeight(.semibold)
-            
-            // THIS BUTTON WAS CHATGPT GENERERATED AND ONLY FOR TESTING!!!
-            // WILL NEED TO UPDATED AND REMOVED
-            Button("Choose CSV File") {
-                isImporterPresented = true
-            }
-            // example file importer
-            .fileImporter(
-                isPresented: $isImporterPresented,
-                allowedContentTypes: [.commaSeparatedText, .plainText],
-                allowsMultipleSelection: false
-            ) {
-                //Logic is simply for testing NEEDS TO BE CLEANED UP
-                result in
-                switch result {
-                case .success(let urls):
-                    if let url = urls.first {
-                        selectedFile = url
-                        print("Picked file: \(url)")
-                        do {
-                            try self.model.ingestFile(file: url)
-                            print("Headers \(self.model.getHeaders())")
+            HStack {
+                // THIS BUTTON WAS CHATGPT GENERERATED AND ONLY FOR TESTING!!!
+                // WILL NEED TO UPDATED AND REMOVED
+                Button("Choose CSV File") {
+                    isImporterPresented = true
+                }
+                // example file importer
+                .fileImporter(
+                    isPresented: $isImporterPresented,
+                    allowedContentTypes: [.commaSeparatedText],
+                    allowsMultipleSelection: false
+                ) {
+                    //Logic is simply for testing NEEDS TO BE CLEANED UP
+                    result in
+                    switch result {
+                    case .success(let urls):
+                        if let url = urls.first {
+                            selectedFile = url
+                            print("Picked file: \(url)")
+                            do {
+                                try self.model.ingestFile(file: url)
+                            }
+                            catch{
+                                print("Error ingesting file \(error)")
+                            }
                         }
-                        catch{
-                            print("Error ingesting file \(error)")
-                        }
+                    case .failure(let error):
+                        print("Failed to pick file: \(error)")
                     }
-                case .failure(let error):
-                    print("Failed to pick file: \(error)")
+                }
+                // If model loaded add buttons for each axis
+                if !model.headers.isEmpty {
+                    // X axis selector
+                    Menu {
+                        ForEach(model.headers, id: \.self) { header in
+                            Button(header) {
+                                do {
+                                    try model.setAxis(axisToSet: .x, header: header)
+                                }
+                                catch {
+                                    print("Error setting axis : \(error)")
+                                }
+                            }
+                        }
+                    } label: {
+                        Label("Set X Axis", systemImage: "x.circle")
+                            .labelStyle(.titleAndIcon)
+                    }
+                    // Y Axis selector
+                    Menu {
+                        ForEach(model.headers, id: \.self) { header in
+                            Button(header) {
+                                do {
+                                    try model.setAxis(axisToSet: .y, header: header)
+                                }
+                                catch {
+                                    print("Error setting axis : \(error)")
+                                }
+                            }
+                        }
+                    } label: {
+                        Label("Set Y Axis", systemImage: "y.circle")
+                            .labelStyle(.titleAndIcon)
+                    }
+                    // Z Axis Selector 
+                    Menu {
+                        ForEach(model.headers, id: \.self) { header in
+                            Button(header) {
+                                do {
+                                    try model.setAxis(axisToSet: .z, header: header)
+                                }
+                                catch {
+                                    print("Error setting axis : \(error)")
+                                }
+                            }
+                        }
+                    } label: {
+                        Label("Set Z Axis", systemImage: "z.circle")
+                            .labelStyle(.titleAndIcon)
+                    }
+                }
+            }
+            if #available(visionOS 26.0, *) {
+                if !model.rows.isEmpty {
+                    // attempt to get the string for each axis if not able use placeholder
+                    let xLabel: String = model.getAxisHeader(axisToGet: .x) ?? "X Axis"
+                    let yLabel: String = model.getAxisHeader(axisToGet: .y) ?? "Y Axis"
+                    let zLabel: String = model.getAxisHeader(axisToGet: .z) ?? "Z Axis"
+                    
+                    //attempt to get axis range but fall back to a default range
+                    let xDom = (try? model.getAxisRange(axis: .x)) ?? (-50...50)
+                    let yDom = (try? model.getAxisRange(axis: .y)) ?? (-50...50)
+                    let zDom = (try? model.getAxisRange(axis: .z)) ?? (-50...50)
+                    
+                    //add chart with rows, labels and scale 
+                    let chart = Chart3D(model.rows) { (row: Row) in
+                        PointMark(
+                            x: .value(xLabel, row.x),
+                            y: .value(yLabel, row.y),
+                            z: .value(zLabel, row.z)
+                        )
+                    }
+                    .chartXAxisLabel(xLabel)
+                    .chartYAxisLabel(yLabel)
+                    .chartZAxisLabel(zLabel)
+                    .chartXScale(domain: xDom, range: .plotDimension(padding: 100))
+                    .chartYScale(domain: yDom, range: .plotDimension(padding: 100))
+                    .chartZScale(domain: zDom, range: .plotDimension(padding: 100))
+                    
+                    chart.frame(width: 1500, height: 1500, alignment: .center)
                 }
             }
         }
+        //chart does not render properly if this is removed
+        //DO NOT REMOVE IS LOAD BEARING 
         RealityView { content in
-            // Add the initial RealityKit content
-            if let scene = try? await Entity(named: "Scene", in: realityKitContentBundle) {
-                content.add(scene)
-            }
-        } update: { content in
-            // Update the RealityKit content when SwiftUI state changes
-            if let scene = content.entities.first {
-                let uniformScale: Float = enlarge ? 3.0 : 1.0
-                scene.transform.scale = [uniformScale, uniformScale, uniformScale]
-            }
+//            // Add the initial RealityKit content
+//            if let scene = try? await Entity(named: "Scene", in: realityKitContentBundle) {
+//                content.add(scene)
+//            }
         }
-        .gesture(TapGesture().targetedToAnyEntity().onEnded { _ in
-            enlarge.toggle()
-        })
     }
 }
 
