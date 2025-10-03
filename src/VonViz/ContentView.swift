@@ -20,35 +20,6 @@ struct ContentView: View {
         ZStack {
             VStack {
                 HStack {
-                    // THIS BUTTON WAS CHATGPT GENERERATED AND ONLY FOR TESTING!!!
-                    // WILL NEED TO UPDATED AND REMOVED
-//                    Button("Choose CSV File") {
-//                        isImporterPresented = true
-//                    }
-//                    // example file importer
-//                    .fileImporter(
-//                        isPresented: $isImporterPresented,
-//                        allowedContentTypes: [.commaSeparatedText],
-//                        allowsMultipleSelection: false
-//                    ) {
-//                        //Logic is simply for testing NEEDS TO BE CLEANED UP
-//                        result in
-//                        switch result {
-//                        case .success(let urls):
-//                            if let url = urls.first {
-//                                selectedFile = url
-//                                print("Picked file: \(url)")
-//                                // Uncomment and use error handling when ready:
-//                                // do {
-//                                //     try self.model.ingestFile(file: url)
-//                                // } catch {
-//                                //     print("Error ingesting file \(error)")
-//                                // }
-//                            }
-//                        case .failure(let error):
-//                            print("Failed to pick file: \(error)")
-//                        }
-//                    }
                     // If model loaded add buttons for each axis
                     if !model.headers.isEmpty {
                         // X axis selector
@@ -190,8 +161,6 @@ struct ContentView: View {
                             .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
                     }
                 }
-                
-                VStack(spacing: 28) {
                     Spacer(minLength: 54) // Add space under the floating button
                     
                     Button {
@@ -253,10 +222,6 @@ struct ContentView: View {
                 .padding(.horizontal, 24)
                 .accessibilityLabel("Choose CSV File")
             }
-//            .buttonStyle(
-//                // You may need to move PrimaryButtonStyle out as well if used elsewhere
-//              //  ButtonStyleConfiguration.Primary() // Replace this with your PrimaryButtonStyle, or move its definition out.
-//            )
             .fileImporter(
                 isPresented: $isImporterPresented,
                 allowedContentTypes: [.commaSeparatedText, .plainText],
@@ -266,7 +231,7 @@ struct ContentView: View {
                 case .success(let urls):
                     if let url = urls.first {
                         selectedFile = url
-                        print("Picked file: \(url)")
+                        print("Picked file: \(url.lastPathComponent)")
                     }
                 case .failure(let error):
                     print("Failed to pick file: \(error)")
