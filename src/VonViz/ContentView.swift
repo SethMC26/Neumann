@@ -161,90 +161,50 @@ struct ContentView: View {
                             .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
                     }
                 }
-                    Spacer(minLength: 54) // Add space under the floating button
-                    
-                    Button {
-                        enlarge.toggle()
-                    } label: {
-                        Text("Enlarge Scene")
+
+                }
+                
+                // Floating "Choose CSV File" button, always front/top
+                Button {
+                    isImporterPresented = true
+                } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: "doc.fill.badge.plus")
+                            .font(.title.weight(.bold))
+                        Text("Choose CSV File")
+                            .font(.title2.weight(.bold))
                     }
-                    .buttonStyle(SecondaryButtonStyle())
-                    .padding(.horizontal, 40)
-                    .animation(.smooth(duration: 0.25), value: enlarge)
-                    
-                    if let file = selectedFile {
-                        VStack(spacing: 8) {
-                            RealityView { content in
-                                if let scene = try? await Entity(named: "Scene", in: realityKitContentBundle) {
-                                    content.add(scene)
-                                }
-                            } update: { content in
-                                if let scene = content.entities.first {
-                                    let uniformScale: Float = enlarge ? 3.0 : 1.0
-                                    scene.transform.scale = [uniformScale, uniformScale, uniformScale]
-                                }
+                    .padding(.vertical, 14)
+                    .padding(.horizontal, 24)
+                    .accessibilityLabel("Choose CSV File")
+                }
+                .fileImporter(
+                    isPresented: $isImporterPresented,
+                    allowedContentTypes: [.commaSeparatedText],
+                    allowsMultipleSelection: false
+                ) {
+                    //Logic is simply for testing NEEDS TO BE CLEANED UP
+                    result in
+                    switch result {
+                    case .success(let urls):
+                        if let url = urls.first {
+                            selectedFile = url
+                            print("Picked file: \(url)")
+                            do {
+                                try self.model.ingestFile(file: url)
                             }
-                            .frame(width: 250, height: 250)
-                            .cornerRadius(16)
-                            .shadow(color: .black.opacity(0.35), radius: 18, y: 8)
-                            .gesture(TapGesture().targetedToAnyEntity().onEnded { _ in
-                                enlarge.toggle()
-                            })
-                            
-                            Text(file.lastPathComponent)
-                                .font(.caption)
-                                .foregroundColor(.white.opacity(0.8))
-                                .padding(.top, 4)
+                            catch{
+                                print("Error ingesting file \(error)")
+                            }
                         }
-                        .padding()
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24))
-                        .shadow(color: .black.opacity(0.30), radius: 12, y: 6)
-                        .frame(width: 320, height: 420)
-                        .transition(.scale)
+                    case .failure(let error):
+                        print("Failed to pick file: \(error)")
                     }
-                    Spacer()
                 }
-              //  .padding(.top, 0)
-              //  .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.top, 8)
+                .zIndex(1)
             }
-            
-            // Floating "Choose CSV File" button, always front/top
-            Button {
-                isImporterPresented = true
-            } label: {
-                HStack(spacing: 10) {
-                    Image(systemName: "doc.fill.badge.plus")
-                        .font(.title.weight(.bold))
-                    Text("Choose CSV File")
-                        .font(.title2.weight(.bold))
-                }
-                .padding(.vertical, 14)
-                .padding(.horizontal, 24)
-                .accessibilityLabel("Choose CSV File")
-            }
-            .fileImporter(
-                isPresented: $isImporterPresented,
-                allowedContentTypes: [.commaSeparatedText, .plainText],
-                allowsMultipleSelection: false
-            ) { result in
-                switch result {
-                case .success(let urls):
-                    if let url = urls.first {
-                        selectedFile = url
-                        print("Picked file: \(url.lastPathComponent)")
-                    }
-                case .failure(let error):
-                    print("Failed to pick file: \(error)")
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding(.top, 8)
-            .zIndex(1)
         }
     }
-}
 
-// Preview should not be inside the body
-#Preview(windowStyle: .volumetric) {
-    ContentView()
-}
