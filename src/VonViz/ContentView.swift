@@ -36,16 +36,16 @@ struct ContentView: View {
                     case .success(let urls):
                         if let url = urls.first {
                             selectedFile = url
-                            print("Picked file: \(url)")
+                            Log.UserView.debug("Picked file: \(url)")
                             do {
                                 try self.model.ingestFile(file: url)
                             }
                             catch{
-                                print("Error ingesting file \(error)")
+                                Log.UserView.error("Error loading file \(error)")
                             }
                         }
                     case .failure(let error):
-                        print("Failed to pick file: \(error)")
+                        Log.UserView.error("Failed to pick file: \(error)")
                     }
                 }
                 // If model loaded add buttons for each axis
@@ -58,7 +58,7 @@ struct ContentView: View {
                                     try model.setAxis(axisToSet: .x, header: header)
                                 }
                                 catch {
-                                    print("Error setting axis : \(error)")
+                                    Log.UserView.error("Error setting axis : \(error)")
                                 }
                             }
                         }
@@ -90,7 +90,7 @@ struct ContentView: View {
                                     try model.setAxis(axisToSet: .z, header: header)
                                 }
                                 catch {
-                                    print("Error setting axis : \(error)")
+                                    Log.UserView.error("Error setting axis : \(error)")
                                 }
                             }
                         }
@@ -111,8 +111,8 @@ struct ContentView: View {
                     let xDom = (try? model.getAxisRange(axis: .x)) ?? (-50...50)
                     let yDom = (try? model.getAxisRange(axis: .y)) ?? (-50...50)
                     let zDom = (try? model.getAxisRange(axis: .z)) ?? (-50...50)
-                    
-                    //add chart with rows, labels and scale 
+
+                    //add chart with rows, labels and scale
                     let chart = Chart3D(model.rows) { (row: Row) in
                         PointMark(
                             x: .value(xLabel, row.x),
