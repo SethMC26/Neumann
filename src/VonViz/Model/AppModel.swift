@@ -19,7 +19,7 @@ struct Row : Identifiable {
 /// AppModel is the model for the App and main model for the controllers of the app to interact with.
 class AppModel: ObservableObject{
     /// limit to data that can be displayed
-    private let DISPLAY_LIMIT: Int = 100
+    private let DISPLAY_LIMIT: Int = 1000
     /// Data that the user has imported, nil is none has been imported yet
     private var data: DataFrame? = nil
     /// Data that is being displayed currented(sliced dataframe from data)
@@ -39,6 +39,7 @@ class AppModel: ObservableObject{
     /// - Throws:
     ///      - AppError from render functions
     func setAxis(axisToSet: Axis, header: String) throws {
+        Log.Model.debug("Setting axis to \(axisToSet) to \(header)")
         axes[axisToSet] = header
         try render()
     }
@@ -54,6 +55,8 @@ class AppModel: ObservableObject{
     /// the inputting of datasets to the visualization.
     /// - Parameter url: URL of local file to load
     func ingestFile(file: URL) throws {
+        Log.Model.debug("Loading file: \(file)")
+        
         //remove old data
         data = try DataFrame(contentsOfCSVFile: file)
         currDataDisplayed = nil
@@ -66,6 +69,7 @@ class AppModel: ObservableObject{
         // names of the columns with numbers that a user can select
         var col_names: [String] = []
         
+        Log.Model.debug("Getting headers and doing type conversions to doubles ")
         //attempt to automatically set axes
         for col in df.columns {
             let type = col.wrappedElementType
@@ -86,7 +90,8 @@ class AppModel: ObservableObject{
         //set displayed data to first three applicable columns
         axes = [Axis.x: col_names[0], Axis.y: col_names[1], Axis.z: col_names[2]]
         self.currDataDisplayed = df[[col_names[0], col_names[1], col_names[2]]]
-        
+        Log.Model.debug("Set default Axis \(axes) and sliced dataframe")
+
         try render()
         
     }
@@ -95,6 +100,7 @@ class AppModel: ObservableObject{
     /// Renders the data frame
     /// - Throws: AppError if no dataset loaded, x, y, z axis not set yet
     func render() throws {
+        Log.Model.info("Rendering data")
         // load data frame and check if loaded
         guard let df = data else {
             throw AppError.noLoadedDataset
@@ -110,7 +116,7 @@ class AppModel: ObservableObject{
         }
         
         var newRows: [Row] = []
-        
+        Log.Model.debug("Attempting type conversion on each row")
         for data in df.rows {
             //attempt to read data in each column as a double
             let colOne = try asDouble(data[xLabel])
@@ -120,11 +126,13 @@ class AppModel: ObservableObject{
             newRows.append(Row(id: data.index, x:  colOne, y:  colTwo, z: colThree))
             
             if newRows.count > DISPLAY_LIMIT {
+                Log.Model.info("Reached display limit \(DISPLAY_LIMIT)")
                 break
             }
         }
         
         //change state of row at the end once all rows loaded
+        Log.Model.debug("Render complete publishing new data")
         //UI is waiting for a state change on rows so we only want to change once its ready
         rows = newRows
 
@@ -134,6 +142,7 @@ class AppModel: ObservableObject{
     /// - Parameter axis: Axis to get range for
     /// - Returns: Closed Range of doubles for that access
     func getAxisRange(axis: Axis) throws -> ClosedRange<Double> {
+        Log.Model.info("Getting the range for axis \(axis)")
         //should never happen button should only appear once dataset loaded
         guard let df = data else {
                 throw AppError.noLoadedDataset
