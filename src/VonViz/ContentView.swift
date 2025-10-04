@@ -18,6 +18,42 @@ struct ContentView: View {
     var body: some View {
         
         VStack {
+            if #available(visionOS 26.0, *) {
+                if !model.rows.isEmpty {
+                    // attempt to get the string for each axis if not able use placeholder
+                    let xLabel: String = model.getAxisHeader(axisToGet: .x) ?? "X Axis"
+                    let yLabel: String = model.getAxisHeader(axisToGet: .y) ?? "Y Axis"
+                    let zLabel: String = model.getAxisHeader(axisToGet: .z) ?? "Z Axis"
+                    
+                    //attempt to get axis range but fall back to a default range
+                    let xDom = (try? model.getAxisRange(axis: .x)) ?? (-50...50)
+                    let yDom = (try? model.getAxisRange(axis: .y)) ?? (-50...50)
+                    let zDom = (try? model.getAxisRange(axis: .z)) ?? (-50...50)
+                    
+                    //add chart with rows, labels and scale
+                    let chart = Chart3D(model.rows) { (row: Row) in
+                        PointMark(
+                            x: .value(xLabel, row.x),
+                            y: .value(yLabel, row.y),
+                            z: .value(zLabel, row.z)
+                        )
+                    }
+                        .chartXAxisLabel(xLabel)
+                        .chartYAxisLabel(yLabel)
+                        .chartZAxisLabel(zLabel)
+                        .chartXScale(domain: xDom, range: .plotDimension(padding: 750))
+                        .chartYScale(domain: yDom, range: .plotDimension(padding: 750))
+                        .chartZScale(domain: zDom, range: .plotDimension(padding: 750))
+                    
+                    chart
+                        .frame(width: 1000, height: 1000, alignment: .top)
+                        .frame(depth: 1000, alignment: .back)
+                        .scaleEffect(2)
+                        .scaledToFit3D()
+                        .padding(200)
+                        .layoutPriority(10.0)
+                }
+            }
             HStack {
                 // THIS BUTTON WAS CHATGPT GENERERATED AND ONLY FOR TESTING!!!
                 // WILL NEED TO UPDATED AND REMOVED
@@ -82,7 +118,7 @@ struct ContentView: View {
                         Label("Set Y Axis", systemImage: "y.circle")
                             .labelStyle(.titleAndIcon)
                     }
-                    // Z Axis Selector 
+                    // Z Axis Selector
                     Menu {
                         ForEach(model.headers, id: \.self) { header in
                             Button(header) {
@@ -100,44 +136,6 @@ struct ContentView: View {
                     }
                 }
             }
-            if #available(visionOS 26.0, *) {
-                if !model.rows.isEmpty {
-                    // attempt to get the string for each axis if not able use placeholder
-                    let xLabel: String = model.getAxisHeader(axisToGet: .x) ?? "X Axis"
-                    let yLabel: String = model.getAxisHeader(axisToGet: .y) ?? "Y Axis"
-                    let zLabel: String = model.getAxisHeader(axisToGet: .z) ?? "Z Axis"
-                    
-                    //attempt to get axis range but fall back to a default range
-                    let xDom = (try? model.getAxisRange(axis: .x)) ?? (-50...50)
-                    let yDom = (try? model.getAxisRange(axis: .y)) ?? (-50...50)
-                    let zDom = (try? model.getAxisRange(axis: .z)) ?? (-50...50)
-
-                    //add chart with rows, labels and scale
-                    let chart = Chart3D(model.rows) { (row: Row) in
-                        PointMark(
-                            x: .value(xLabel, row.x),
-                            y: .value(yLabel, row.y),
-                            z: .value(zLabel, row.z)
-                        )
-                    }
-                    .chartXAxisLabel(xLabel)
-                    .chartYAxisLabel(yLabel)
-                    .chartZAxisLabel(zLabel)
-                    .chartXScale(domain: xDom, range: .plotDimension(padding: 100))
-                    .chartYScale(domain: yDom, range: .plotDimension(padding: 100))
-                    .chartZScale(domain: zDom, range: .plotDimension(padding: 100))
-                    
-                    chart.frame(width: 1500, height: 1500, alignment: .center)
-                }
-            }
-        }
-        //chart does not render properly if this is removed
-        //DO NOT REMOVE IS LOAD BEARING 
-        RealityView { content in
-//            // Add the initial RealityKit content
-//            if let scene = try? await Entity(named: "Scene", in: realityKitContentBundle) {
-//                content.add(scene)
-//            }
         }
     }
 }
