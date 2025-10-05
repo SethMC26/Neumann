@@ -28,8 +28,7 @@ struct ContentView: View {
                                 Button(header) {
                                     do {
                                         try model.setAxis(axisToSet: .x, header: header)
-                                    }
-                                    catch {
+                                    } catch {
                                         print("Error setting axis : \(error)")
                                     }
                                 }
@@ -37,15 +36,19 @@ struct ContentView: View {
                         } label: {
                             Label("Set X Axis", systemImage: "x.circle")
                                 .labelStyle(.titleAndIcon)
+                                .foregroundColor(Color.black)
+                                .font(Font.largeTitle.bold())
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .position(x: 200, y: 25)
                         }
+
                         // Y Axis selector
                         Menu {
                             ForEach(model.headers, id: \.self) { header in
                                 Button(header) {
                                     do {
                                         try model.setAxis(axisToSet: .y, header: header)
-                                    }
-                                    catch {
+                                    } catch {
                                         print("Error setting axis : \(error)")
                                     }
                                 }
@@ -53,15 +56,19 @@ struct ContentView: View {
                         } label: {
                             Label("Set Y Axis", systemImage: "y.circle")
                                 .labelStyle(.titleAndIcon)
+                                .foregroundColor(Color.black)
+                                .font(Font.largeTitle.bold())
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .position(x: 200, y: 25)
                         }
+
                         // Z Axis Selector
                         Menu {
                             ForEach(model.headers, id: \.self) { header in
                                 Button(header) {
                                     do {
                                         try model.setAxis(axisToSet: .z, header: header)
-                                    }
-                                    catch {
+                                    } catch {
                                         print("Error setting axis : \(error)")
                                     }
                                 }
@@ -69,22 +76,24 @@ struct ContentView: View {
                         } label: {
                             Label("Set Z Axis", systemImage: "z.circle")
                                 .labelStyle(.titleAndIcon)
+                                .foregroundColor(Color.black)
+                                .font(Font.largeTitle.bold())
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .position(x: 200, y: 25)
                         }
                     }
                 }
+
                 if #available(visionOS 26.0, *) {
                     if !model.rows.isEmpty {
-                        // attempt to get the string for each axis if not able use placeholder
                         let xLabel: String = model.getAxisHeader(axisToGet: .x) ?? "X Axis"
                         let yLabel: String = model.getAxisHeader(axisToGet: .y) ?? "Y Axis"
                         let zLabel: String = model.getAxisHeader(axisToGet: .z) ?? "Z Axis"
                         
-                        //attempt to get axis range but fall back to a default range
                         let xDom = (try? model.getAxisRange(axis: .x)) ?? (-50...50)
                         let yDom = (try? model.getAxisRange(axis: .y)) ?? (-50...50)
                         let zDom = (try? model.getAxisRange(axis: .z)) ?? (-50...50)
                         
-                        //add chart with rows, labels and scale
                         let chart = Chart3D(model.rows) { (row: Row) in
                             PointMark(
                                 x: .value(xLabel, row.x),
@@ -92,24 +101,25 @@ struct ContentView: View {
                                 z: .value(zLabel, row.z)
                             )
                         }
-                            .chartXAxisLabel(xLabel)
-                            .chartYAxisLabel(yLabel)
-                            .chartZAxisLabel(zLabel)
-                            .chartXScale(domain: xDom, range: .plotDimension(padding: 100))
-                            .chartYScale(domain: yDom, range: .plotDimension(padding: 100))
-                            .chartZScale(domain: zDom, range: .plotDimension(padding: 100))
+                        .chartXAxisLabel(xLabel)
+                        .chartYAxisLabel(yLabel)
+                        .chartZAxisLabel(zLabel)
+                        .chartXScale(domain: xDom, range: .plotDimension(padding: 100))
+                        .chartYScale(domain: yDom, range: .plotDimension(padding: 100))
+                        .chartZScale(domain: zDom, range: .plotDimension(padding: 100))
                         
-                        chart.frame(width: 1500, height: 1500, alignment: .center)
+                        chart.frame(width: 1300, height: 1300, alignment: .center)
                     }
                 }
             }
-            //chart does not render properly if this is removed
-            //DO NOT REMOVE IS LOAD BEARING
+
+            // chart does not render properly if this is removed
             RealityView { content in
-                /// A glowing, vibrant button ideal for primary actions.
                 struct PrimaryButtonStyle: ButtonStyle {
                     func makeBody(configuration: Configuration) -> some View {
                         configuration.label
+                            .padding(.top, 300)
+                            .frame(maxWidth: .infinity, alignment: .center)
                             .font(.callout.weight(.bold))
                             .foregroundColor(.white)
                             .padding(.vertical, 8)
@@ -135,8 +145,7 @@ struct ContentView: View {
                             .animation(.easeOut(duration: 0.17), value: configuration.isPressed)
                     }
                 }
-                
-                /// A secondary, frosted "ghost" button.
+
                 struct SecondaryButtonStyle: ButtonStyle {
                     func makeBody(configuration: Configuration) -> some View {
                         configuration.label
@@ -161,50 +170,44 @@ struct ContentView: View {
                             .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
                     }
                 }
-
-                }
-                
-                // Floating "Choose CSV File" button, always front/top
-                Button {
-                    isImporterPresented = true
-                } label: {
-                    HStack(spacing: 10) {
-                        Image(systemName: "doc.fill.badge.plus")
-                            .font(.title.weight(.bold))
-                        Text("Choose CSV File")
-                            .font(.title2.weight(.bold))
-                    }
-                    .padding(.vertical, 14)
-                    .padding(.horizontal, 24)
-                    .accessibilityLabel("Choose CSV File")
-                }
-                .fileImporter(
-                    isPresented: $isImporterPresented,
-                    allowedContentTypes: [.commaSeparatedText],
-                    allowsMultipleSelection: false
-                ) {
-                    //Logic is simply for testing NEEDS TO BE CLEANED UP
-                    result in
-                    switch result {
-                    case .success(let urls):
-                        if let url = urls.first {
-                            selectedFile = url
-                            print("Picked file: \(url)")
-                            do {
-                                try self.model.ingestFile(file: url)
-                            }
-                            catch{
-                                print("Error ingesting file \(error)")
-                            }
-                        }
-                    case .failure(let error):
-                        print("Failed to pick file: \(error)")
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.top, 8)
-                .zIndex(1)
             }
+            // Floating "Choose CSV File" button, always front/top
+           Button {
+               isImporterPresented = true
+           } label: {
+               HStack(spacing: 10) {
+                   Image(systemName: "doc.fill.badge.plus")
+                       .font(.title.weight(.bold))
+                   Text("Choose CSV File")
+                       .font(.title2.weight(.bold))
+               }
+               .padding(.vertical, 14)
+               .padding(.horizontal, 24)
+               .accessibilityLabel("Choose CSV File")
+           }
+            .fileImporter(
+                isPresented: $isImporterPresented,
+                allowedContentTypes: [.commaSeparatedText],
+                allowsMultipleSelection: false
+            ) { result in
+                switch result {
+                case .success(let urls):
+                    if let url = urls.first {
+                        selectedFile = url
+                        print("Picked file: \(url)")
+                        do {
+                            try model.ingestFile(file: url)
+                        } catch {
+                            print("Error ingesting file \(error)")
+                        }
+                    }
+                case .failure(let error):
+                    print("Failed to pick file: \(error)")
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.top, 300)
+            .zIndex(1)
         }
     }
-
+}
