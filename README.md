@@ -10,3 +10,6 @@ https://drive.google.com/drive/folders/1CM16wybFIhSwVYIqdR9js68r6Z8kbevn
 
 ## Requirements Document 
 https://docs.google.com/document/d/1di0hmVVpLvBlKFenA-8kkR31mgci4VnPpNHRg9MaDP0/edit?usp=sharing
+
+## Functional Specification 
+https://docs.google.com/document/d/1SQBXQbUjqS2LLoCnjhjYLIRzyWLuwVce7hs8QsRnFZk/edit?usp=drivesdk
