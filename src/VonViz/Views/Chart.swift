@@ -1,9 +1,14 @@
 import SwiftUI
 import Charts
 
+///Chart that has the visualization of the data
 struct Chart : View {
+    ///Model with backend data
     @ObservedObject var model: AppModel
     
+    /// Create a new Axis button
+    /// - Parameters:
+    ///   - model: Model for button to update
     init(model: AppModel) {
         self.model = model
     }
@@ -35,6 +40,7 @@ struct Chart : View {
             .chartYScale(domain: yDom, range: .plotDimension(padding: 750))
             .chartZScale(domain: zDom, range: .plotDimension(padding: 750))
         }
+        //not avaiable show placeholder; User error they must update AVP
         else {
             ContentUnavailableView("Only VisionOS 26 or newer is supported", systemImage: "tray")
         }

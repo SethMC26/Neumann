@@ -1,15 +1,21 @@
 import SwiftUI
 
+///Button to control the axis of our model
 struct AxisButton : View {
     @ObservedObject var model: AppModel
     let axis: Axis
-
+    
+    /// Create a new Axis button
+    /// - Parameters:
+    ///   - model: Model for button to update
+    ///   - axis: Axis that this button will control(Axis.x, Axis.y, Axis,z)
     init(model: AppModel, axis: Axis) {
         self.model = model
         self.axis = axis
     }
     
     var body : some View {
+        ///menu option for each applicable header in our model
         Menu {
             ForEach(model.headers, id: \.self) { header in
                 Button(header) {
@@ -23,6 +29,8 @@ struct AxisButton : View {
                 }
             }
         } label: {
+            // set label based on axis
+            
             switch axis {
             case .x:
                 Label("Set X Axis", systemImage: "chart.xyaxis.line") // safe symbol

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    ///Model to hold the data of our app between the different views
     @StateObject private var model: AppModel = AppModel()
     
     /// toolBar view with all main buttons of our app

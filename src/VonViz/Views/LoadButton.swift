@@ -1,9 +1,15 @@
 import SwiftUI
 
+///Load button to load in a CSV file
 struct LoadButton : View {
+    ///Model for data updates
     @ObservedObject var model: AppModel
+    ///flag to show if we should present the data view
     @State private var isImporterPresented = false
 
+    /// Create a new Axis button
+    /// - Parameters:
+    ///   - model: Model for button to update
     init(model: AppModel) {
         self.model = model
     }
