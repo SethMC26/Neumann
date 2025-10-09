@@ -6,142 +6,48 @@
 //
 
 import SwiftUI
-import Charts
-import RealityKit
-import RealityKitContent
 
 struct ContentView: View {
+    ///Model to hold the data of our app between the different views
     @StateObject private var model: AppModel = AppModel()
-    @State private var selectedFile: URL?
-    @State private var isImporterPresented = false
+    
+    /// toolBar view with all main buttons of our app
+    var toolBarContent: some View {
+        HStack {
+            LoadButton(model: model)
+            // Axis menus only if model has headers
+            if !model.headers.isEmpty {
+                // X axis selector
+                AxisButton(model: model, axis: .x)
+                AxisButton(model: model, axis: .y)
+                AxisButton(model: model, axis: .z)
+            }
+        }
+    }
     
     var body: some View {
         
         VStack {
-            HStack {
-                // THIS BUTTON WAS CHATGPT GENERERATED AND ONLY FOR TESTING!!!
-                // WILL NEED TO UPDATED AND REMOVED
-                Button("Choose CSV File") {
-                    isImporterPresented = true
-                }
-                // example file importer
-                .fileImporter(
-                    isPresented: $isImporterPresented,
-                    allowedContentTypes: [.commaSeparatedText],
-                    allowsMultipleSelection: false
-                ) {
-                    //Logic is simply for testing NEEDS TO BE CLEANED UP
-                    result in
-                    switch result {
-                    case .success(let urls):
-                        if let url = urls.first {
-                            selectedFile = url
-                            print("Picked file: \(url)")
-                            do {
-                                try self.model.ingestFile(file: url)
-                            }
-                            catch{
-                                print("Error ingesting file \(error)")
-                            }
-                        }
-                    case .failure(let error):
-                        print("Failed to pick file: \(error)")
-                    }
-                }
-                // If model loaded add buttons for each axis
-                if !model.headers.isEmpty {
-                    // X axis selector
-                    Menu {
-                        ForEach(model.headers, id: \.self) { header in
-                            Button(header) {
-                                do {
-                                    try model.setAxis(axisToSet: .x, header: header)
-                                }
-                                catch {
-                                    print("Error setting axis : \(error)")
-                                }
-                            }
-                        }
-                    } label: {
-                        Label("Set X Axis", systemImage: "x.circle")
-                            .labelStyle(.titleAndIcon)
-                    }
-                    // Y Axis selector
-                    Menu {
-                        ForEach(model.headers, id: \.self) { header in
-                            Button(header) {
-                                do {
-                                    try model.setAxis(axisToSet: .y, header: header)
-                                }
-                                catch {
-                                    print("Error setting axis : \(error)")
-                                }
-                            }
-                        }
-                    } label: {
-                        Label("Set Y Axis", systemImage: "y.circle")
-                            .labelStyle(.titleAndIcon)
-                    }
-                    // Z Axis Selector 
-                    Menu {
-                        ForEach(model.headers, id: \.self) { header in
-                            Button(header) {
-                                do {
-                                    try model.setAxis(axisToSet: .z, header: header)
-                                }
-                                catch {
-                                    print("Error setting axis : \(error)")
-                                }
-                            }
-                        }
-                    } label: {
-                        Label("Set Z Axis", systemImage: "z.circle")
-                            .labelStyle(.titleAndIcon)
-                    }
-                }
+            if #available(visionOS 26.0, *), !model.rows.isEmpty {
+                Chart(model: model)
+                    .offset(z: 100)
+                    .zIndex(0)
+                    .frame(width: 1000, height: 1000, alignment: .center)
+                    .frame(depth: 1000, alignment: .back)
+                    .scaleEffect(2)
+                    .scaledToFit3D()
+                    .padding(100)
+                    .layoutPriority(10.0)
             }
-            if #available(visionOS 26.0, *) {
-                if !model.rows.isEmpty {
-                    // attempt to get the string for each axis if not able use placeholder
-                    let xLabel: String = model.getAxisHeader(axisToGet: .x) ?? "X Axis"
-                    let yLabel: String = model.getAxisHeader(axisToGet: .y) ?? "Y Axis"
-                    let zLabel: String = model.getAxisHeader(axisToGet: .z) ?? "Z Axis"
-                    
-                    //attempt to get axis range but fall back to a default range
-                    let xDom = (try? model.getAxisRange(axis: .x)) ?? (-50...50)
-                    let yDom = (try? model.getAxisRange(axis: .y)) ?? (-50...50)
-                    let zDom = (try? model.getAxisRange(axis: .z)) ?? (-50...50)
-                    
-                    //add chart with rows, labels and scale 
-                    let chart = Chart3D(model.rows) { (row: Row) in
-                        PointMark(
-                            x: .value(xLabel, row.x),
-                            y: .value(yLabel, row.y),
-                            z: .value(zLabel, row.z)
-                        )
-                    }
-                    .chartXAxisLabel(xLabel)
-                    .chartYAxisLabel(yLabel)
-                    .chartZAxisLabel(zLabel)
-                    .chartXScale(domain: xDom, range: .plotDimension(padding: 100))
-                    .chartYScale(domain: yDom, range: .plotDimension(padding: 100))
-                    .chartZScale(domain: zDom, range: .plotDimension(padding: 100))
-                    
-                    chart.frame(width: 1500, height: 1500, alignment: .center)
-                }
+            else {
+                ContentUnavailableView("No data yet", systemImage: "tray")
+                    .offset(z: 300)
+                    .zIndex(1)
             }
-        }
-        //chart does not render properly if this is removed
-        //DO NOT REMOVE IS LOAD BEARING 
-        RealityView { content in
-//            // Add the initial RealityKit content
-//            if let scene = try? await Entity(named: "Scene", in: realityKitContentBundle) {
-//                content.add(scene)
-//            }
+            toolBarContent
+                .offset(z: 500)
+                .zIndex(1)
+                
         }
     }
-}
-
-#Preview(windowStyle: .volumetric) {
-    ContentView()
 }
