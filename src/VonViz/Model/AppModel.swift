@@ -22,8 +22,6 @@ class AppModel: ObservableObject{
     private let DISPLAY_LIMIT: Int = 1000
     /// Data that the user has imported, nil is none has been imported yet
     private var data: DataFrame? = nil
-    /// Data that is being displayed currented(sliced dataframe from data)
-    private var currDataDisplayed: DataFrame? = nil
     
     /// Map of axis and header associated with axis to display
     private var axes: [Axis: AxisInfo] = [
@@ -44,7 +42,7 @@ class AppModel: ObservableObject{
     ///      - AppError from render functions
     func setAxis(axisToSet: Axis, header: String) throws {
         Log.Model.debug("Setting axis to \(axisToSet) to \(header)")
-        guard let df = currDataDisplayed else {
+        guard let df = data else {
             Log.Model.error("No dataset loaded")
             throw AppError.noLoadedDataset
         }
@@ -68,7 +66,6 @@ class AppModel: ObservableObject{
         
         //remove old data
         data = try DataFrame(contentsOfCSVFile: file)
-        currDataDisplayed = nil
         rows = []
         
         //reset axes map
@@ -111,7 +108,6 @@ class AppModel: ObservableObject{
         try axes[.y]?.setValues(header: col_names[1], column: df[col_names[1]])
         try axes[.z]?.setValues(header: col_names[2], column: df[col_names[2]])
         
-        self.currDataDisplayed = df[[col_names[0], col_names[1], col_names[2]]]
         Log.Model.debug("Set default Axis \(axes) and sliced dataframe")
 
         try render()
@@ -123,7 +119,7 @@ class AppModel: ObservableObject{
     func render() throws {
         Log.Model.info("Rendering data")
         // load data frame and check if loaded
-        guard let df = currDataDisplayed else {
+        guard let df = data else {
             Log.Model.error("No dataset loaded while rendering")
             throw AppError.noLoadedDataset
         }
