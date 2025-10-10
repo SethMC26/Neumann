@@ -1,5 +1,5 @@
 import TabularData
-
+import math_h
 
 /// AxisInfo is a struct holding information for the x y or z axis displayed
 /// `header` - Column name of this axis
@@ -50,9 +50,37 @@ struct AxisInfo {
 
         self.min = minVal
         self.max = maxVal
+        self.steps = autoStep()
         self.header = header
         Log.Model.debug("Setting \(header) Min: \(min), Max: \(max)")
     }
+    /// Compute a human-friendly step size for an axis, given its min/max.
+    /// - Parameters:
+    /// - Returns: A step value rounded to 1/2/5 × 10ⁿ increments.
+    private func autoStep() -> Double {
+        //vibe coded
+        let range = abs(max - min)
+        guard range > 0 else { return 1 }
 
+        // decide roughly how many ticks we want:
+        // small range → few ticks, large range → more
+        let targetTicks = Swift.max(3, Swift.min(10, Int(log10(range) * 2) + 4))
+
+        // pick a step size that divides the range into that many parts
+        let step = range / Double(targetTicks)
+
+        // round to a “nice” value (1, 2, 5 × 10^n)
+        let exp = floor(log10(step))
+        let magnitude = pow(10.0, exp)
+        let fraction = step / magnitude
+
+        let roundedFraction: Double
+        if fraction < 1.5 { roundedFraction = 1 }
+        else if fraction < 3 { roundedFraction = 2 }
+        else if fraction < 7 { roundedFraction = 5 }
+        else { roundedFraction = 10 }
+
+        return roundedFraction * magnitude
+        }
 }
 

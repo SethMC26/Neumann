@@ -170,6 +170,38 @@ class AppModel: ObservableObject{
         return try axisInfo.getDomain()
     }
     
+    func setAxisDomain(axis: Axis, min: Double?, max: Double?, steps: Double?) throws {
+        guard var axisInfo = axes[axis] else {
+            Log.Model.fault("Axis not loaded - should never happen")
+            throw AppError.headerNotRecongized
+        }
+        
+        if min != nil {
+            axisInfo.min = min! //force unwrap we already checked if nil
+        }
+        
+        if max != nil {
+            axisInfo.max = max! //force unwrap we already checked if nil
+        }
+        
+        if steps != nil {
+            axisInfo.steps = steps! //force unwrap we already checked if nil
+        }
+        
+        //add back to map structs are pass by copy
+        axes[axis] = axisInfo
+        try render()
+    }
+    
+    func getAxisInfo(axis: Axis) throws -> AxisInfo{
+        Log.Model.debug("Getting Axis info for \(axis)")
+        guard let axisInfo = axes[axis] else {
+            Log.Model.error("Axis not loaded")
+            throw AppError.headerNotRecongized
+        }
+        
+        return axisInfo
+    }
     /// chatGPT generated function to return a number value as a double
     private func asDouble(_ value: Any?) throws -> Double {
         switch value {
