@@ -173,6 +173,12 @@ class AppModel: ObservableObject{
             axisInfo.steps = steps! //force unwrap we already checked if nil
         }
         
+        //check if min > max if so error out before saving axisInfo to map
+        if (axisInfo.min > axisInfo.max) {
+            Log.Model.error("Min value is greater than max cannot set Domain")
+            throw AppError.minGreaterThanMax
+        }
+        
         //add back to map structs are pass by copy
         axes[axis] = axisInfo
         try render()

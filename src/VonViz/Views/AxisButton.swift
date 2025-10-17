@@ -67,7 +67,7 @@ struct AxisButton: View {
                         Menu {
                             ForEach(model.headers, id: \.self) { header in
                                 Button(header) {
-                                    //currentHeader = header
+                                    currentHeader = header
                                     try? model.setAxis(axisToSet: axis, header: header)
                                 }
                             }
@@ -135,7 +135,7 @@ struct AxisButton: View {
                     }
                     catch {
                         //todo add better error handling and user feedback
-                        Log.UserView.error("Error setting axis \(error.localizedDescription)")
+                        Log.UserView.error("Error setting axis \(error)")
                     }
                     
 
