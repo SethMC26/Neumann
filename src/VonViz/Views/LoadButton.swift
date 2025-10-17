@@ -3,14 +3,14 @@ import SwiftUI
 ///Load button to load in a CSV file
 struct LoadButton : View {
     ///Model for data updates
-    @ObservedObject var model: AppModel
+    @ObservedObject var model: DataChartModel
     ///flag to show if we should present the data view
     @State private var isImporterPresented = false
 
     /// Create a new Axis button
     /// - Parameters:
     ///   - model: Model for button to update
-    init(model: AppModel) {
+    init(model: DataChartModel) {
         self.model = model
     }
     

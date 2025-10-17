@@ -4,12 +4,12 @@ import Charts
 ///Chart that has the visualization of the data
 struct Chart : View {
     ///Model with backend data
-    @ObservedObject var model: AppModel
+    @ObservedObject var model: DataChartModel
     
     /// Create a new Axis button
     /// - Parameters:
     ///   - model: Model for button to update
-    init(model: AppModel) {
+    init(model: DataChartModel) {
         self.model = model
     }
     
@@ -70,6 +70,7 @@ struct Chart : View {
             .chartZAxis {
                 AxisMarks(values: zTicks)
             }
+            
         }
         //not avaiable show placeholder; User error they must update AVP
         else {

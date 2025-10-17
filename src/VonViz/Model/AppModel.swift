@@ -2,7 +2,7 @@ import Foundation
 import TabularData
 
 /// AppModel is the model for the App and main model for the controllers of the app to interact with.
-class AppModel: ObservableObject{
+class DataChartModel: ObservableObject{
     /// limit to data that can be displayed
     private let DISPLAY_LIMIT: Int = 1000
     /// Data that the user has imported, nil is none has been imported yet
