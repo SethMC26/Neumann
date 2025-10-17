@@ -127,6 +127,12 @@ class AppModel: ObservableObject{
             let colTwo = try asDouble(data[yLabel])
             let colThree = try asDouble(data[zLabel])
             
+            //if value is NaN skip the row
+            //may want to make more sophisticated or add settings to configure this later
+            if colOne.isNaN || colTwo.isNaN || colThree.isNaN {
+                Log.Model.debug("Row contains a NaN skipping")
+                continue
+            }
             newRows.append(Row(id: data.index, x:  colOne, y:  colTwo, z: colThree))
             
             if newRows.count > DISPLAY_LIMIT {
@@ -199,6 +205,9 @@ class AppModel: ObservableObject{
         case let d as Double: return d
         case let i as Int:    return Double(i)
         case let f as Float:  return Double(f)
+        //if we are missing a value then return NaN
+        case Optional<Any>.none, is NSNull:
+            return Double.nan
         //throw internalStateError we should only be calling this function on values we know will be an Int Double or Float
         default:
             Log.Model.fault("Non-numeric type - we should have already filtered these columns out")
