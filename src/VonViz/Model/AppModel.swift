@@ -60,6 +60,26 @@ class AppModel: ObservableObject{
             .z : AxisInfo()
         ]
         
+        let fileExtension = file.pathExtension.lowercased()
+        
+        switch fileExtension {
+            case "csv":
+            data = try DataFrame(contentsOfCSVFile: file)
+            break
+            
+        case "json":
+            data = try LoadFrameJSON(contentsOfJSONFile: file)
+            break
+            
+            case "xlsx", "xls":
+            data = try LoadFrameExcel(contentsOfExcelFile: file)
+            break
+            
+        default:
+            Log.Model.fault("File extension not supported: \(fileExtension)")
+            throw AppError.notEnoughColumns
+        }
+        
         //Should not error out here but include this check to please the compiler
         guard let df = data else {
             Log.Model.fault("No dataframe parsed - should have already exited function")
@@ -96,6 +116,29 @@ class AppModel: ObservableObject{
         Log.Model.debug("Set default Axis \(axes) and sliced dataframe")
 
         try render()
+    }
+    
+    
+    /// function to parse json files
+    func LoadFrameJSON(from: URL) throws -> DataFrame {
+        log.Model.info("Loading dataframe from file: \(fileName)")
+        /// try to load file contents into a Data, run JSONSerialization on data
+        let data = try Data(contentsOf: URL)
+        let json = try JSONSerialization.jsonObject(with: data, options: [])
+        
+        /// turn data into an array, if error occurs throw the error
+        guard let array = json as? [[String: Any]] else {
+            log.Model.error("JSON is not an array of dictionaries")
+            throw AppError.invalidJSONFormat
+        }
+        
+        /// return final dataframe
+        return try DataFrame(from: array)
+    }
+    
+    /// function to parse excel files
+    func LoadFrameExcel(fileName: String) async throws -> DataFrame {
+        
     }
     
     
@@ -214,4 +257,18 @@ class AppModel: ObservableObject{
             throw AppError.internalStateError
         }
     }
+    
+    
+    /// CHATGPT GENERATED
+    enum AppError: Error {
+        case noLoadedDataset
+        case notEnoughColumns
+        case headerNotRecongized
+        case internalStateError
+        case minGreaterThanMax
+        case unsupportedFileType
+        case invalidJSONFormat
+        case invalidExcelFile
+    }
 }
+
