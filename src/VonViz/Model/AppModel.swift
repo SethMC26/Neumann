@@ -1,21 +1,6 @@
 import Foundation
 import TabularData
 
-/// Axis with x y and z
-enum Axis {
-    case x
-    case y
-    case z
-}
-
-/// Row of data for use in Chart3D
-struct Row : Identifiable {
-    let id: Int
-    let x: Double
-    let y: Double
-    let z: Double
-}
-
 /// AppModel is the model for the App and main model for the controllers of the app to interact with.
 class AppModel: ObservableObject{
     /// limit to data that can be displayed
@@ -215,12 +200,3 @@ class AppModel: ObservableObject{
         }
     }
 }
-
-enum AppError: Error {
-    case noLoadedDataset
-    case notEnoughColumns
-    case headerNotRecongized
-    case internalStateError
-}
-
-
