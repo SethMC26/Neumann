@@ -31,13 +31,13 @@ struct LoadButton : View {
                     do {
                         try model.ingestFile(file: url)
                     } catch {
-                        Log.UserView.error("Error loading file: \(error.localizedDescription)")
+                        Log.UserView.error("Error loading file: \(error)")
                     }
                 } else {
                     Log.UserView.error("File picker returned empty URL list")
                 }
             case .failure(let error):
-                Log.UserView.error("Failed to pick file: \(error.localizedDescription)")
+                Log.UserView.error("Failed to pick file: \(error)")
             }
         }
     }

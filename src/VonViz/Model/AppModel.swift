@@ -1,21 +1,6 @@
 import Foundation
 import TabularData
 
-/// Axis with x y and z
-enum Axis {
-    case x
-    case y
-    case z
-}
-
-/// Row of data for use in Chart3D
-struct Row : Identifiable {
-    let id: Int
-    let x: Double
-    let y: Double
-    let z: Double
-}
-
 /// AppModel is the model for the App and main model for the controllers of the app to interact with.
 class AppModel: ObservableObject{
     /// limit to data that can be displayed
@@ -142,6 +127,12 @@ class AppModel: ObservableObject{
             let colTwo = try asDouble(data[yLabel])
             let colThree = try asDouble(data[zLabel])
             
+            //if value is NaN skip the row
+            //may want to make more sophisticated or add settings to configure this later
+            if colOne.isNaN || colTwo.isNaN || colThree.isNaN {
+                Log.Model.debug("Row contains a NaN skipping")
+                continue
+            }
             newRows.append(Row(id: data.index, x:  colOne, y:  colTwo, z: colThree))
             
             if newRows.count > DISPLAY_LIMIT {
@@ -188,6 +179,12 @@ class AppModel: ObservableObject{
             axisInfo.steps = steps! //force unwrap we already checked if nil
         }
         
+        //check if min > max if so error out before saving axisInfo to map
+        if (axisInfo.min > axisInfo.max) {
+            Log.Model.error("Min value is greater than max cannot set Domain")
+            throw AppError.minGreaterThanMax
+        }
+        
         //add back to map structs are pass by copy
         axes[axis] = axisInfo
         try render()
@@ -208,6 +205,9 @@ class AppModel: ObservableObject{
         case let d as Double: return d
         case let i as Int:    return Double(i)
         case let f as Float:  return Double(f)
+        //if we are missing a value then return NaN
+        case Optional<Any>.none, is NSNull:
+            return Double.nan
         //throw internalStateError we should only be calling this function on values we know will be an Int Double or Float
         default:
             Log.Model.fault("Non-numeric type - we should have already filtered these columns out")
@@ -215,12 +215,3 @@ class AppModel: ObservableObject{
         }
     }
 }
-
-enum AppError: Error {
-    case noLoadedDataset
-    case notEnoughColumns
-    case headerNotRecongized
-    case internalStateError
-}
-
-

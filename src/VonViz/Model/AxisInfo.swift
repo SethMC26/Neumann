@@ -1,3 +1,4 @@
+import Foundation
 import TabularData
 import math_h
 
@@ -33,11 +34,15 @@ struct AxisInfo {
                 return Double(v)
             case let v as Int:
                 return Double(v)
+            case Optional<Any>.none, is NSNull:
+                    // Missing row: represent as NaN
+                    return .nan
             default:
                 Log.Model.fault("Got value in column that was not numerical - should have already filtered these columns out")
                 throw AppError.internalStateError
             }
         }
+            .filter {!$0.isNaN } //remove all NaN from values
         
         //I hate swift coding patterns
         guard
@@ -47,7 +52,14 @@ struct AxisInfo {
             Log.Model.fault("Could not get min or max value - should never get here")
             throw AppError.internalStateError
         }
-
+        
+        //throw an error if min is greater than max
+        if min > max {
+            Log.Model.fault("Min greater than Max")
+            Log.Model.info("Min greater than max should not happen here, likely an upstream issue in the code")
+            throw AppError.minGreaterThanMax
+        }
+        
         self.min = minVal
         self.max = maxVal
         self.steps = autoStep()
