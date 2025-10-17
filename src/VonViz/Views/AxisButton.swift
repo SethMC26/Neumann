@@ -67,7 +67,7 @@ struct AxisButton: View {
                         Menu {
                             ForEach(model.headers, id: \.self) { header in
                                 Button(header) {
-                                    currentHeader = header
+                                    //currentHeader = header
                                     try? model.setAxis(axisToSet: axis, header: header)
                                 }
                             }
@@ -82,13 +82,38 @@ struct AxisButton: View {
                     }
 
                     // Inline editors for Min / Max / Steps
-                    Section("Edit Values") {
-                        TextField("Min", text: $minText)
-                            .keyboardType(.decimalPad)
-                        TextField("Max", text: $maxText)
-                            .keyboardType(.decimalPad)
-                        TextField("Steps", text: $stepsText)
-                            .keyboardType(.decimalPad)
+                    Section("Edit Axis Scale") {
+                        LabeledContent("Min:") {
+                            TextField("Enter Min value", text: $minText)
+                                .keyboardType(.decimalPad)
+                                .multilineTextAlignment(.center)
+                                //add box to help let user know they can tap it
+                                .background(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.secondary.opacity(0.4), lineWidth: 1)
+                                )
+                                .frame(width: 100)
+                        }
+                        LabeledContent("Max:") {
+                            TextField("Enter max value", text: $maxText)
+                                .keyboardType(.decimalPad)
+                                .multilineTextAlignment(.center)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.secondary.opacity(0.4), lineWidth: 1)
+                                )
+                                .frame(width: 100)
+                        }
+                        LabeledContent("Steps:") {
+                            TextField("Enter steps value", text: $stepsText)
+                                .keyboardType(.decimalPad)
+                                .multilineTextAlignment(.center)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.secondary.opacity(0.4), lineWidth: 1)
+                                )
+                                .frame(width: 100)
+                        }
                     }
                 }
                 .navigationTitle("\(axisLabel) Options")
@@ -105,10 +130,14 @@ struct AxisButton: View {
                     let stepsToSend = changedOrNil(newValue: newSteps, current: currentSteps)
 
                     // Apply updates
-                    try? model.setAxisDomain(axis: axis,
-                                             min: minToSend,
-                                             max: maxToSend,
-                                             steps: stepsToSend)
+                    do {
+                        try model.setAxisDomain(axis: axis, min: minToSend,max: maxToSend, steps: stepsToSend)
+                    }
+                    catch {
+                        //todo add better error handling and user feedback
+                        Log.UserView.error("Error setting axis \(error.localizedDescription)")
+                    }
+                    
 
                     // Update local baselines
                     if let v = minToSend { currentMin = v }
