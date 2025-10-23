@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BA0434DF2EAABE0E00877392 /* CoreXLSX in Frameworks */ = {isa = PBXBuildFile; productRef = BA0434DE2EAABE0E00877392 /* CoreXLSX */; };
 		EFF3D67A2E772F8F00DC1416 /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = EFF3D6792E772F8F00DC1416 /* RealityKitContent */; };
 /* End PBXBuildFile section */
 
@@ -57,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA0434DF2EAABE0E00877392 /* CoreXLSX in Frameworks */,
 				EFF3D67A2E772F8F00DC1416 /* RealityKitContent in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -119,6 +121,7 @@
 			name = VonViz;
 			packageProductDependencies = (
 				EFF3D6792E772F8F00DC1416 /* RealityKitContent */,
+				BA0434DE2EAABE0E00877392 /* CoreXLSX */,
 			);
 			productName = VonViz;
 			productReference = EFF3D6742E772F8F00DC1416 /* VonViz.app */;
@@ -175,6 +178,9 @@
 			);
 			mainGroup = EFF3D66B2E772F8F00DC1416;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				BA0434DD2EAABE0E00877392 /* XCRemoteSwiftPackageReference "CoreXLSX" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EFF3D6752E772F8F00DC1416 /* Products */;
 			projectDirPath = "";
@@ -466,7 +472,23 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		BA0434DD2EAABE0E00877392 /* XCRemoteSwiftPackageReference "CoreXLSX" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/CoreOffice/CoreXLSX";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.14.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		BA0434DE2EAABE0E00877392 /* CoreXLSX */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BA0434DD2EAABE0E00877392 /* XCRemoteSwiftPackageReference "CoreXLSX" */;
+			productName = CoreXLSX;
+		};
 		EFF3D6792E772F8F00DC1416 /* RealityKitContent */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RealityKitContent;

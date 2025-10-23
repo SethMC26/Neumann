@@ -1,5 +1,6 @@
 import Foundation
 import TabularData
+import CoreXLSX
 
 /// AppModel is the model for the App and main model for the controllers of the app to interact with.
 class AppModel: ObservableObject{
@@ -69,12 +70,12 @@ class AppModel: ObservableObject{
             
         case "json":
             let jsonURL = try ConvertFromJSON(jsonFile: file)
-            try DataFrame(contentsOfCSVFile: jsonURL)
+            data = try DataFrame(contentsOfCSVFile: jsonURL)
             break
             
             case "xlsx", "xls":
             let xlURL = try ConvertFromExcel(excelFile: file)
-            try DataFrame(contentsOfCSVFile: xlURL)
+            data = try DataFrame(contentsOfCSVFile: xlURL)
             break
             
         default:
@@ -120,6 +121,8 @@ class AppModel: ObservableObject{
         try render()
     }
     
+    /// function to convert json into csv
+    ///  - Throws: AppError if file is either not in json format or is empty
     func ConvertFromJSON(jsonFile: URL) throws -> URL {
         Log.Model.info("Converting JSON to CSV: \(jsonFile.lastPathComponent)")
 
@@ -131,16 +134,16 @@ class AppModel: ObservableObject{
             throw AppError.invalidJSONFormat
         }
 
-        // Create a temp CSV file path
+        /// creates a temp CSV file path
         let tempURL = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString)
             .appendingPathExtension("csv")
 
-        // Determine headers
+        /// determine headers
         let headers = Array(array[0].keys)
         var csvString = headers.joined(separator: ",") + "\n"
 
-        // Write rows
+        /// write rows
         for dict in array {
             let row = headers.map { key in
                 if let val = dict[key] {
@@ -151,10 +154,50 @@ class AppModel: ObservableObject{
             }
             csvString += row.joined(separator: ",") + "\n"
         }
-
+        
+        /// finally, try to write as a csv string
         try csvString.write(to: tempURL, atomically: true, encoding: .utf8)
         return tempURL
     }
+    
+    
+    func ConvertFromExcel(excelFile: URL) throws -> URL {
+            Log.Model.info("Converting Excel to CSV: \(excelFile.lastPathComponent)")
+            
+            // Open XLSX file
+            guard let xlsxFile = XLSXFile(filepath: excelFile.path) else {
+                Log.Model.error("Unable to open Excel file")
+                throw AppError.invalidExcelFile
+            }
+
+            // Parse the first worksheet
+            let worksheets = try xlsxFile.parseWorksheetPathsAndNames()
+            guard let first = worksheets.first else {
+                Log.Model.error("No worksheets found")
+                throw AppError.invalidExcelFile
+            }
+            
+            let sharedStrings = try xlsxFile.parseSharedStrings()
+            let worksheet = try xlsxFile.parseWorksheet(at: first.path)
+            
+            // Convert worksheet rows into CSV text
+            var csvString = ""
+            for row in worksheet.data?.rows ?? [] {
+                let rowString = row.cells.map { cell in
+                    let value = cell.stringValue(sharedStrings) ?? ""
+                    return "\"\(value.replacingOccurrences(of: "\"", with: "\"\""))\""
+                }.joined(separator: ",")
+                csvString += rowString + "\n"
+            }
+
+            // Write temporary CSV
+            let tempCSV = FileManager.default.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString)
+                .appendingPathExtension("csv")
+            try csvString.write(to: tempCSV, atomically: true, encoding: .utf8)
+            
+            return tempCSV
+        }
     
     
     
