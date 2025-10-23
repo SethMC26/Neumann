@@ -68,11 +68,13 @@ class AppModel: ObservableObject{
             break
             
         case "json":
-            data = try LoadFrameJSON(contentsOfJSONFile: file)
+            let jsonURL = try ConvertFromJSON(jsonFile: file)
+            try DataFrame(contentsOfCSVFile: jsonURL)
             break
             
             case "xlsx", "xls":
-            data = try LoadFrameExcel(contentsOfExcelFile: file)
+            let xlURL = try ConvertFromExcel(excelFile: file)
+            try DataFrame(contentsOfCSVFile: xlURL)
             break
             
         default:
@@ -118,28 +120,43 @@ class AppModel: ObservableObject{
         try render()
     }
     
-    
-    /// function to parse json files
-    func LoadFrameJSON(from: URL) throws -> DataFrame {
-        log.Model.info("Loading dataframe from file: \(fileName)")
-        /// try to load file contents into a Data, run JSONSerialization on data
-        let data = try Data(contentsOf: URL)
-        let json = try JSONSerialization.jsonObject(with: data, options: [])
-        
-        /// turn data into an array, if error occurs throw the error
-        guard let array = json as? [[String: Any]] else {
-            log.Model.error("JSON is not an array of dictionaries")
+    func ConvertFromJSON(jsonFile: URL) throws -> URL {
+        Log.Model.info("Converting JSON to CSV: \(jsonFile.lastPathComponent)")
+
+        let data = try Data(contentsOf: jsonFile)
+        let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
+
+        guard let array = jsonObject as? [[String: Any]], !array.isEmpty else {
+            Log.Model.error("JSON not an array of dictionaries or empty")
             throw AppError.invalidJSONFormat
         }
-        
-        /// return final dataframe
-        return try DataFrame(from: array)
+
+        // Create a temp CSV file path
+        let tempURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+            .appendingPathExtension("csv")
+
+        // Determine headers
+        let headers = Array(array[0].keys)
+        var csvString = headers.joined(separator: ",") + "\n"
+
+        // Write rows
+        for dict in array {
+            let row = headers.map { key in
+                if let val = dict[key] {
+                    return "\"\(String(describing: val))\""
+                } else {
+                    return ""
+                }
+            }
+            csvString += row.joined(separator: ",") + "\n"
+        }
+
+        try csvString.write(to: tempURL, atomically: true, encoding: .utf8)
+        return tempURL
     }
     
-    /// function to parse excel files
-    func LoadFrameExcel(fileName: String) async throws -> DataFrame {
-        
-    }
+    
     
     
     /// Renders the data frame
