@@ -10,8 +10,12 @@ import SwiftUI
 struct ContentView: View {
     ///Model to hold the data of our data chart
     @StateObject private var dcModel: DataChartModel = DataChartModel()
-    ///Model to hold data of our functional chart aka surface plot
-    @StateObject private var fModel: FuncChartModel = FuncChartModel()
+    //initial string for surface plot
+    private static let initFunc: String = "sin(2 * x) * cos(z)"
+    //Model to hold the data of surfaceplot
+    //crash if first input doesnt work something is very wrong our default should ALWAYS work
+    @StateObject var fModel: FuncChartModel = try! FuncChartModel(input: ContentView.initFunc)
+    
     /// toolBar view with all main buttons of our app
     var toolBarContent: some View {
         HStack {
@@ -50,9 +54,10 @@ struct ContentView: View {
                 .zIndex(1)
         }
     }
-    
+   
+    @available(visionOS 26.0, *)
     var funcChart : some View {
-        FuncChart(model: fModel)
+        FuncChart(model: fModel, initFunc: ContentView.initFunc)
             .tabItem{
                 Text("Surface Plot")
             }
