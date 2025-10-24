@@ -1,6 +1,5 @@
 import Foundation
 import TabularData
-import math_h
 
 /// AxisInfo is a struct holding information for the x y or z axis displayed
 /// `header` - Column name of this axis
