@@ -1,4 +1,5 @@
-///This file holds miscalleounus enums and structs that are small and uncomplex for use in Model. 
+///This file holds miscalleounus enums and structs that are small and uncomplex for use in Model.
+///
 
 ///Errors that can be thrown by our app
 enum AppError: Error {

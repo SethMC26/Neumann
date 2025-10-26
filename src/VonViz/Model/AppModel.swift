@@ -169,34 +169,22 @@ class AppModel: ObservableObject{
         
         if min != nil {
             axisInfo.min = min! //force unwrap we already checked if nil
-<<<<<<< HEAD
         }
         
         if max != nil {
             axisInfo.max = max! //force unwrap we already checked if nil
         }
         
-=======
-        }
-        
-        if max != nil {
-            axisInfo.max = max! //force unwrap we already checked if nil
-        }
-        
->>>>>>> main
         if steps != nil {
             axisInfo.steps = steps! //force unwrap we already checked if nil
         }
         
-<<<<<<< HEAD
-=======
         //check if min > max if so error out before saving axisInfo to map
         if (axisInfo.min > axisInfo.max) {
             Log.Model.error("Min value is greater than max cannot set Domain")
             throw AppError.minGreaterThanMax
         }
         
->>>>>>> main
         //add back to map structs are pass by copy
         axes[axis] = axisInfo
         try render()
@@ -227,28 +215,3 @@ class AppModel: ObservableObject{
         }
     }
 }
-<<<<<<< HEAD
-
-enum AppError: Error {
-    case noLoadedDataset
-    case notEnoughColumns
-    case headerNotRecongized
-    case internalStateError
-}
-
-extension AppError: LocalizedError {
-    var errorDescription: String? {
-        switch self {
-        case .noLoadedDataset:
-            return "No dataset has been loaded. Please import a CSV file."
-        case .notEnoughColumns:
-            return "This dataset does not have enough numeric columns. Please select a CSV with at least three number columns."
-        case .headerNotRecongized:
-            return "A required column could not be found in your dataset."
-        case .internalStateError:
-            return "An internal error occurred. Please try again or contact support."
-        }
-    }
-}
-=======
->>>>>>> main

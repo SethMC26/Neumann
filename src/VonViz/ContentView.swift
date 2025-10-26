@@ -8,28 +8,21 @@
 import SwiftUI
 
 struct ContentView: View {
-    ///Model to hold the data of our app between the different views
+    /// Model to hold the data of our app between the different views
     @StateObject private var model: AppModel = AppModel()
     
-<<<<<<< HEAD
     /// Show user message
     @State private var alertMessage: String?
 
     /// toolBar view with all main buttons of our app
     var toolBarContent: some View {
         HStack {
+            // Provide feedback via alert
             LoadButton(model: model) { message in
                 alertMessage = message
             }
-=======
-    /// toolBar view with all main buttons of our app
-    var toolBarContent: some View {
-        HStack {
-            LoadButton(model: model)
->>>>>>> main
             // Axis menus only if model has headers
             if !model.headers.isEmpty {
-                // X axis selector
                 AxisButton(model: model, axis: .x)
                 AxisButton(model: model, axis: .y)
                 AxisButton(model: model, axis: .z)
@@ -49,8 +42,7 @@ struct ContentView: View {
                     .scaledToFit3D()
                     .padding(100)
                     .layoutPriority(10.0)
-            }
-            else {
+            } else {
                 ContentUnavailableView("No data yet", systemImage: "tray")
                     .offset(z: 300)
                     .zIndex(1)
@@ -58,20 +50,12 @@ struct ContentView: View {
             toolBarContent
                 .offset(z: 500)
                 .zIndex(1)
-<<<<<<< HEAD
         }
-        .alert(alertMessage ?? "This dataset does not have enough number colunms", isPresented: Binding(
+        .alert(alertMessage ?? "", isPresented: Binding(
             get: { alertMessage != nil },
-            set: { if !$0 { alertMessage = nil } },
+            set: { if !$0 { alertMessage = nil } }
         )) {
             Button("OK", role: .cancel) { alertMessage = nil }
         }
     }
 }
-
-=======
-                
-        }
-    }
-}
->>>>>>> main
