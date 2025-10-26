@@ -11,6 +11,7 @@ struct ContentView: View {
     ///Model to hold the data of our app between the different views
     @StateObject private var model: AppModel = AppModel()
     
+<<<<<<< HEAD
     /// Show user message
     @State private var alertMessage: String?
 
@@ -20,6 +21,12 @@ struct ContentView: View {
             LoadButton(model: model) { message in
                 alertMessage = message
             }
+=======
+    /// toolBar view with all main buttons of our app
+    var toolBarContent: some View {
+        HStack {
+            LoadButton(model: model)
+>>>>>>> main
             // Axis menus only if model has headers
             if !model.headers.isEmpty {
                 // X axis selector
@@ -51,6 +58,7 @@ struct ContentView: View {
             toolBarContent
                 .offset(z: 500)
                 .zIndex(1)
+<<<<<<< HEAD
         }
         .alert(alertMessage ?? "This dataset does not have enough number colunms", isPresented: Binding(
             get: { alertMessage != nil },
@@ -61,3 +69,9 @@ struct ContentView: View {
     }
 }
 
+=======
+                
+        }
+    }
+}
+>>>>>>> main
