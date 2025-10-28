@@ -13,20 +13,29 @@ struct ContentView: View {
     
     /// Show user message
     @State private var alertMessage: String?
+    /// Show settings sheet
+    @State private var showingSettings = false
 
     /// toolBar view with all main buttons of our app
     var toolBarContent: some View {
         HStack {
-            // Provide feedback via alert
             LoadButton(model: model) { message in
                 alertMessage = message
             }
-            // Axis menus only if model has headers
             if !model.headers.isEmpty {
                 AxisButton(model: model, axis: .x)
                 AxisButton(model: model, axis: .y)
                 AxisButton(model: model, axis: .z)
             }
+            // Add settings button at end
+            Button {
+                showingSettings = true
+            } label: {
+                Image(systemName: "gearshape")
+                    .imageScale(.large)
+                    .accessibilityLabel("Settings")
+            }
+            .padding(.leading, 8)
         }
     }
     
@@ -57,5 +66,10 @@ struct ContentView: View {
         )) {
             Button("OK", role: .cancel) { alertMessage = nil }
         }
+        .sheet(isPresented: $showingSettings) {
+            SettingsSheet(model: model)
+                .presentationDetents([.medium, .large])
+        }
     }
 }
+
