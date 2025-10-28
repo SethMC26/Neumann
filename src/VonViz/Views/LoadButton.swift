@@ -20,7 +20,6 @@ struct LoadButton : View {
     }
     
     var body : some View {
-        // TEMP button for testing
         Button("Choose CSV File") {
             isImporterPresented = true
         }
@@ -38,12 +37,20 @@ struct LoadButton : View {
                     } catch let error as AppError {
                         Log.UserView.error("Error loading file: \(error)")
                         // Show user-friendly message for known errors
+                        let message: String
                         switch error {
+                        case .noLoadedDataset:
+                            message = "No dataset could be loaded from the selected file. Please check the file and try again."
                         case .notEnoughColumns:
-                            onError?("This dataset does not have enough numeric columns to visualize. Please select a CSV with at least three number columns.")
-                        default:
-                            onError?("Failed to load the file: \(error.localizedDescription)")
+                            message = "This dataset does not have enough numeric columns to visualize. Please select a CSV file with at least three number columns."
+                        case .headerNotRecongized:
+                            message = "One or more selected columns could not be recognized in the file. Please reselect your axes."
+                        case .internalStateError:
+                            message = "An internal error occurred while loading the dataset. Please try again or contact support if the issue persists."
+                        case .minGreaterThanMax:
+                            message = "The minimum axis value is greater than the maximum. Please check your axis settings and try again."
                         }
+                        onError?(message)
                     } catch {
                         Log.UserView.error("Error loading file: \(error)")
                         onError?("An unexpected error occurred: \(error.localizedDescription)")

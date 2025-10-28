@@ -3,9 +3,6 @@ import SwiftUI
 ///Button to control the axis of our model
 ///Author - ChatGPT
 struct AxisButton: View {
-    //BELOW CODE IS 100% CHATGPT GENERATED
-    //I Vibe coded this because I am not a UI dev or care to be one - seth
-    //Someone should probably fix it
     @ObservedObject var model: AppModel
     let axis: Axis
 
@@ -22,6 +19,10 @@ struct AxisButton: View {
     @State private var minText: String = ""
     @State private var maxText: String = ""
     @State private var stepsText: String = ""
+
+    // Error alert state
+    @State private var errorMessage: String?
+    @State private var showingErrorAlert: Bool = false
 
     /// Create a new Axis button
     /// - Parameters:
@@ -87,7 +88,6 @@ struct AxisButton: View {
                             TextField("Enter Min value", text: $minText)
                                 .keyboardType(.decimalPad)
                                 .multilineTextAlignment(.center)
-                                //add box to help let user know they can tap it
                                 .background(
                                     RoundedRectangle(cornerRadius: 8)
                                         .stroke(Color.secondary.opacity(0.4), lineWidth: 1)
@@ -119,7 +119,31 @@ struct AxisButton: View {
                 .navigationTitle("\(axisLabel) Options")
                 // Done button automatically applies changes before closing
                 .navigationBarItems(trailing: Button("Done") {
-                    // Parse input
+                    // Check if a header is selected
+                    if currentHeader == nil || currentHeader == "" || currentHeader == "Select header" {
+                        errorMessage = "A header must be selected."
+                        showingErrorAlert = true
+                        return
+                    }
+
+                    // Validate min, max, steps (if not blank)
+                    if !minText.isEmpty && Double(minText) == nil {
+                        errorMessage = "Min must be a valid number."
+                        showingErrorAlert = true
+                        return
+                    }
+                    if !maxText.isEmpty && Double(maxText) == nil {
+                        errorMessage = "Max must be a valid number."
+                        showingErrorAlert = true
+                        return
+                    }
+                    if !stepsText.isEmpty && Double(stepsText) == nil {
+                        errorMessage = "Steps must be a valid number."
+                        showingErrorAlert = true
+                        return
+                    }
+
+                    // Parse input (valid/blank to nil allowed)
                     let newMin = Double(minText)
                     let newMax = Double(maxText)
                     let newSteps = Double(stepsText)
@@ -131,22 +155,37 @@ struct AxisButton: View {
 
                     // Apply updates
                     do {
-                        try model.setAxisDomain(axis: axis, min: minToSend,max: maxToSend, steps: stepsToSend)
+                        try model.setAxisDomain(axis: axis, min: minToSend, max: maxToSend, steps: stepsToSend)
+                        // Update local baselines
+                        if let v = minToSend { currentMin = v }
+                        if let v = maxToSend { currentMax = v }
+                        if let v = stepsToSend { currentSteps = v }
+                        showingSheet = false
+                    }
+                    catch let error as AppError {
+                        switch error {
+                        case .headerNotRecongized:
+                            errorMessage = "A header must be selected."
+                        case .minGreaterThanMax:
+                            errorMessage = "The minimum axis value is greater than the maximum."
+                        default:
+                            errorMessage = "An error occurred: \(error)"
+                        }
+                        showingErrorAlert = true
                     }
                     catch {
-                        //todo add better error handling and user feedback
-                        Log.UserView.error("Error setting axis \(error)")
+                        errorMessage = "An error occurred: \(error.localizedDescription)"
+                        showingErrorAlert = true
                     }
-                    
-
-                    // Update local baselines
-                    if let v = minToSend { currentMin = v }
-                    if let v = maxToSend { currentMax = v }
-                    if let v = stepsToSend { currentSteps = v }
-
-                    showingSheet = false
                 })
             }
+        }
+        .alert(isPresented: $showingErrorAlert) {
+            Alert(
+                title: Text("Error"),
+                message: Text(errorMessage ?? "An error occurred."),
+                dismissButton: .default(Text("OK"))
+            )
         }
     }
 
@@ -165,4 +204,3 @@ struct AxisButton: View {
         }
     }
 }
-
