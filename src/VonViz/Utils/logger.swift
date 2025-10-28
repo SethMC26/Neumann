@@ -53,4 +53,20 @@ struct Log {
         static func error(_ message: String) { logger.error("\(message, privacy: .public)") }
         static func fault(_ message: String) { logger.fault("\(message, privacy: .public)") }
     }
+    
+    /// Logger for **Lang layer** events.
+    ///
+    /// - Category: `"Lang"`
+    /// - Usage:
+    ///   ```swift
+    ///   Log.Lang.error("Could not parse input")
+    ///   ```
+    struct Lang {
+        private static let logger = Logger(subsystem: "edu.Neumann.VonViz", category: "Lang")
+        
+        static func debug(_ message: String) { logger.debug("\(message, privacy: .public)") }
+        static func info(_ message: String) { logger.info("\(message, privacy: .public)") }
+        static func error(_ message: String) { logger.error("\(message, privacy: .public)") }
+        static func fault(_ message: String) { logger.fault("\(message, privacy: .public)") }
+    }
 }

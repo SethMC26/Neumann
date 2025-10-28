@@ -6,7 +6,7 @@ struct AxisButton: View {
     //BELOW CODE IS 100% CHATGPT GENERATED
     //I Vibe coded this because I am not a UI dev or care to be one - seth
     //Someone should probably fix it
-    @ObservedObject var model: AppModel
+    @ObservedObject var model: DataChartModel
     let axis: Axis
 
     // Sheet state
@@ -27,7 +27,7 @@ struct AxisButton: View {
     /// - Parameters:
     ///   - model: Model for button to update
     ///   - axis: Axis that this button will control(Axis.x, Axis.y, Axis,z)
-    init(model: AppModel, axis: Axis) {
+    init(model: DataChartModel, axis: Axis) {
         self.model = model
         self.axis = axis
     }
@@ -88,30 +88,21 @@ struct AxisButton: View {
                                 .keyboardType(.decimalPad)
                                 .multilineTextAlignment(.center)
                                 //add box to help let user know they can tap it
-                                .background(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color.secondary.opacity(0.4), lineWidth: 1)
-                                )
+                                .textFieldStyle(.roundedBorder)
                                 .frame(width: 100)
                         }
                         LabeledContent("Max:") {
                             TextField("Enter max value", text: $maxText)
                                 .keyboardType(.decimalPad)
                                 .multilineTextAlignment(.center)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color.secondary.opacity(0.4), lineWidth: 1)
-                                )
+                                .textFieldStyle(.roundedBorder)
                                 .frame(width: 100)
                         }
                         LabeledContent("Steps:") {
                             TextField("Enter steps value", text: $stepsText)
                                 .keyboardType(.decimalPad)
                                 .multilineTextAlignment(.center)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color.secondary.opacity(0.4), lineWidth: 1)
-                                )
+                                .textFieldStyle(.roundedBorder)
                                 .frame(width: 100)
                         }
                     }
