@@ -23,9 +23,9 @@ struct ContentView: View {
                 alertMessage = message
             }
             if !model.headers.isEmpty {
-                AxisButton(model: model, axis: .x)
-                AxisButton(model: model, axis: .y)
-                AxisButton(model: model, axis: .z)
+                AxisButton(model: model, axis: Axis.x)
+                AxisButton(model: model, axis: Axis.y)
+                AxisButton(model: model, axis: Axis.z)
             }
             // Add settings button at end
             Button {
@@ -41,7 +41,7 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            if #available(visionOS 26.0, *), !model.rows.isEmpty {
+            if #available(visionOS 26.0, *), !$model.rows.isEmpty {
                 Chart(model: model)
                     .offset(z: 100)
                     .zIndex(0)
@@ -72,4 +72,3 @@ struct ContentView: View {
         }
     }
 }
-
