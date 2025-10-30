@@ -1,6 +1,8 @@
 import Foundation
+import SwiftUI
 import TabularData
 import math_h
+import os // <- Optional, for clarity
 
 /// AxisInfo is a struct holding information for the x y or z axis displayed
 /// `header` - Column name of this axis
