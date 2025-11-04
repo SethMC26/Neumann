@@ -14,6 +14,13 @@ class DataChartModel: ObservableObject{
         .y : AxisInfo(header: "Y Axis"),
         .z : AxisInfo(header: "Z Axis")
     ]
+    /// Make display limit user-configurable
+    @Published var displayLimit: Int {
+       didSet {
+           // Optionally persist value
+           UserDefaults.standard.set(displayLimit, forKey: "displayLimit")
+       }
+    }
     /// All headers of columns that can be changed
     @Published var headers: [String] = []
     /// Rows of dataset updated when new file loaded or axis to display is changed
@@ -212,6 +219,16 @@ class DataChartModel: ObservableObject{
         default:
             Log.Model.fault("Non-numeric type - we should have already filtered these columns out")
             throw AppError.internalStateError
+        }
+    }
+    
+    /// Init: load displayLimit from UserDefaults if available
+    init() {
+        let savedLimit = UserDefaults.standard.integer(forKey: "displayLimit")
+        if savedLimit > 0 {
+            self.displayLimit = savedLimit
+        } else {
+            self.displayLimit = 1000
         }
     }
 }
