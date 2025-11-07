@@ -75,7 +75,7 @@ class Parser {
     
     ///Handle Power <power> -> <power> [( ** | // ) <power> ]
     private func evalPower() throws -> SyntaxNode {
-        let power = try evalID()
+        let power = try evalUnary()
         
         switch ( currToken.type ) {
         case .EXP, .ROOT:
@@ -89,6 +89,15 @@ class Parser {
         }
     }
     
+    ///Handle Unary <unary>  → [ - ] <id>
+    private func evalUnary() throws -> SyntaxNode {
+        if (currToken.type == .SUB) {
+            nextTok()
+            let node = try evalID()
+            return UnaryNode(node: node)
+        }
+        return try evalID()
+    }
     ///Handle ID <ID> -> <real> | ( <expr> ) | sin(<expr> ) | cos(<expr>) | tan(<expr>) | x | z
     private func evalID() throws -> SyntaxNode {
         let node: SyntaxNode
