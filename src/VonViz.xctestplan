@@ -1,0 +1,30 @@
+{
+  "configurations" : [
+    {
+      "id" : "88CA481F-3A88-4AD7-BDB8-E8E9522646BD",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:VonViz.xcodeproj",
+      "identifier" : "EFF3D6732E772F8F00DC1416",
+      "name" : "VonViz"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:VonViz.xcodeproj",
+        "identifier" : "EFF3D6852E772F9200DC1416",
+        "name" : "VonVizTests"
+      }
+    }
+  ],
+  "version" : 2
+}

@@ -93,18 +93,15 @@ struct CharStreamTests {
         let r = cs.read()
         try ensure(r.type == .EOF, "Expected EOF for whitespace-only input but got \(r)")
     }
-
-}
-
-extension CharStreamTests {
-    /// Run all char stream tests as a suite (callable from main test entry)
-    static func run() async throws {
-        let inst = CharStreamTests()
-        try await inst.read_skips_whitespace_and_reports_types()
-        try await inst.unread_allows_re_read_of_last_char()
-        try await inst.unread_at_start_is_noop_and_read_returns_first_char()
-        try await inst.empty_input_returns_eof()
-        try await inst.dot_and_other_chars_classified_correctly()
-        try await inst.whitespace_only_input_returns_eof()
+    
+    @Test("unread is no-op if last read was EOF")
+    func unread_noop_after_eof() {
+        let cs = CharStream(characters: "a")
+        _ = cs.read()        // 'a'
+        _ = cs.read()        // EOF, lastReadWasEOF = true
+        cs.unread()          // no-op
+        let r = cs.read()
+        #expect(r.type == .EOF)  // still EOF
     }
+
 }

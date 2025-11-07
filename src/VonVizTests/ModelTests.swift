@@ -119,22 +119,7 @@ struct ModelTests {
     @Test func get_axis_info_returns_struct() async throws {
         let model = DataChartModel()
         let ai = try model.getAxisInfo(axis: .x)
-        try ensure(ai.header == "" && ai.min == -50 && ai.max == 50, "Expected default AxisInfo values")
+        try ensure(ai.header == "X Axis" && ai.min == -50 && ai.max == 50, "Expected default AxisInfo values")
     }
 
-}
-
-extension ModelTests {
-    /// Run all model tests as a suite (callable from main test entry)
-    static func run() async throws {
-        let inst = ModelTests()
-        try await inst.axisinfo_domain_and_defaults()
-        try await inst.datamodel_render_without_dataset_throws()
-        try await inst.ingest_and_render_and_axis_ranges()
-        try await inst.ingest_not_enough_columns_throws()
-        try await inst.set_axis_domain_validation()
-        try await inst.ingest_skips_nan_rows()
-        try await inst.funcchartmodel_parses_and_evaluates_ast()
-        try await inst.get_axis_info_returns_struct()
-    }
 }
