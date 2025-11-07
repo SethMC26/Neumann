@@ -4,6 +4,8 @@ class CharStream {
     private let characters: String
     /// Current index of the stream
     private var currCharIndex: String.Index
+    ///Keep track of if last read aws EOF
+    private var lastReadWasEOF = false
     
     /// Create new Character Stream
     /// - Parameter characters: String to create the stream from(values will be lowercased automatically)
@@ -25,6 +27,7 @@ class CharStream {
         //check if we are at end of the string
         if currCharIndex >= characters.endIndex {
             currCharIndex = characters.endIndex
+            lastReadWasEOF = true
             return (.EOF, "\0")
         }
         
@@ -33,13 +36,18 @@ class CharStream {
         
         //increment for next read
         currCharIndex = characters.index(after: currCharIndex)
-
+        //last Read was not EOF
+        lastReadWasEOF = false
         //return current char and char type
         return charTuple
     }
     
     /// Rewinds the stream by 1
     func unread() {
+        // If the previous read() returned EOF, we didn't advance; do nothing.
+        if lastReadWasEOF { return } 
+        
+        //check if we are at end of the string
         if currCharIndex <= characters.startIndex {
             Log.Lang.error("CharStream: Tried to unread first character! This is not possible")
             return
