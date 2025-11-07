@@ -62,10 +62,10 @@ struct ParserTests {
         var val = try tree.eval(0, 0)
         #expect(abs(val - 1.0) < 1e-12, "Expected sin(0)+cos(0) == 1 but got \(val)")
 
-        p = Parser(input: "x + z")
+        p = Parser(input: "x + y")
         tree = try p.parse()
         val = try tree.eval(2.0, 3.0)
-        #expect(val == 5.0, "Expected x+z with x=2,z=3 to equal 5 but got \(val)")
+        #expect(val == 5.0, "Expected x+z with x=2,y=3 to equal 5 but got \(val)")
     }
 
     /**

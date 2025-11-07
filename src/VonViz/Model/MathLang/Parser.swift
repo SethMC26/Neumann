@@ -114,7 +114,7 @@ class Parser {
             
             //assert next tok is RParen
             try assertTok(")")
-        case .X, .Z:
+        case .X, .Y:
             node = try IdNode(ID: currToken)
             nextTok() //we are ready for the next token
         case .UNKNOWN:

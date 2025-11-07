@@ -62,7 +62,7 @@ struct LexerTests {
      */
     @Test("Operators and function tokens")
     func lexer_operators_and_funcs() throws {
-        let input = "+ - ** * // / ( ) x z sin( cos( tan( abc"
+        let input = "+ - ** * // / ( ) x y sin( cos( tan( abc"
         let lex = Lexer(input: input)
 
         var t = lex.nextToken(); #expect(t.type == .ADD, "Expected ADD but got \(t)")
@@ -74,7 +74,7 @@ struct LexerTests {
         t = lex.nextToken(); #expect(t.type == .LPAREN, "Expected LPAREN but got \(t)")
         t = lex.nextToken(); #expect(t.type == .RPAREN, "Expected RPAREN but got \(t)")
         t = lex.nextToken(); #expect(t.type == .X, "Expected X but got \(t)")
-        t = lex.nextToken(); #expect(t.type == .Z, "Expected Z but got \(t)")
+        t = lex.nextToken(); #expect(t.type == .Y, "Expected Y but got \(t)")
         t = lex.nextToken(); #expect(t.type == .SIN, "Expected SIN but got \(t)")
         t = lex.nextToken(); #expect(t.type == .LPAREN, "Expected LPAREN but got \(t)") // need character to seperate math funcs
         t = lex.nextToken(); #expect(t.type == .COS, "Expected COS but got \(t)")

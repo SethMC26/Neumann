@@ -13,10 +13,10 @@ struct SyntaxTree {
         print(")")
     }
 
-    func eval(_ x: Double, _ z: Double) throws -> Double {
+    func eval(_ x: Double, _ y: Double) throws -> Double {
         var num: Double = 0.0
         for node in nodes {
-            num += try node.eval(x, z)
+            num += try node.eval(x, y)
         }
         return num
     }

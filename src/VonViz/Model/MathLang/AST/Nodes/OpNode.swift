@@ -26,9 +26,9 @@ struct OpNode : SyntaxNode {
         }
     }
     
-    func eval(_ x: Double,_ z: Double) throws -> Double {
-        let leftVal: Double = try leftOp.eval(x, z)
-        let rightVal: Double = try rightOp.eval(x, z)
+    func eval(_ x: Double,_ y: Double) throws -> Double {
+        let leftVal: Double = try leftOp.eval(x, y)
+        let rightVal: Double = try rightOp.eval(x, y)
         
         switch(op.type) {
         case .ADD:

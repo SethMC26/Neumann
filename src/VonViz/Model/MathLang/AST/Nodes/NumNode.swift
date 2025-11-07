@@ -25,7 +25,7 @@ struct NumNode : SyntaxNode {
         printIdent("IdNode[\(String(num))", identAmt)
     }
     
-    func eval(_ x: Double, _ z: Double) -> Double {
+    func eval(_ x: Double, _ y: Double) -> Double {
         return num
     }
 }

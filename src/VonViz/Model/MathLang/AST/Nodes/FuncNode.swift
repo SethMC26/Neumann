@@ -28,9 +28,9 @@ struct FuncNode : SyntaxNode {
         printIdent(")", identAmt)
     }
     
-    func eval(_ x: Double, _ z: Double) throws -> Double{
+    func eval(_ x: Double, _ y: Double) throws -> Double{
         //get val of node inside our function
-        let val = try node.eval(x, z)
+        let val = try node.eval(x, y)
         
         //return value from our function
         switch (function.type) {

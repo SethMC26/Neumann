@@ -16,9 +16,9 @@ struct FuncChart : View {
             Chart3D() {
                 let ast = model.ast
                     
-                SurfacePlot(x: "x", y: "y", z: "z", ) { x, z in
+                SurfacePlot(x: "x", y: "y", z: "z", ) { x, y in
                     do {
-                        return try ast.eval(x, z)
+                        return try ast.eval(x, y)
                     }
                     catch {
                         Log.Model.error("Surface plot cannot eval correctly")
