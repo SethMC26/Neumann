@@ -48,8 +48,8 @@ class Lexer {
             //handle x and y
             case "x":
                 return Token(type: .X, val: "x")
-            case "z":
-                return Token(type: .Z, val: "z")
+            case "y":
+                return Token(type: .Y, val: "y")
             //handle math keyword
             default:
                 var keyword = String(nextChar.value)
@@ -150,7 +150,7 @@ enum TokenType {
     case LPAREN
     case RPAREN
     case X
-    case Z
+    case Y
     case NUMBER
     case EOF
     case UNKNOWN

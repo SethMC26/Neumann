@@ -8,19 +8,19 @@ struct IdNode : SyntaxNode {
     init(ID: Token) throws{
         self.ID = ID
         
-        if ![.X, .Z].contains(ID.type) {
+        if ![.X, .Y].contains(ID.type) {
             Log.Lang.fault("Bad type! \(ID.type)")
             Log.Lang.debug("We should never get here, this means we have an error in the parser")
             throw ParseError.InvalidNodeCreation
         }
     }
     
-    func eval(_ x: Double, _ z: Double) throws -> Double {
+    func eval(_ x: Double, _ y: Double) throws -> Double {
         switch (ID.type) {
         case .X:
             return x
-        case .Z:
-            return z
+        case .Y:
+            return y
         default:
             Log.Lang.fault("Bad Type! \(ID.type) we should NEVER get here")
             self.displaySubtree(identAmt: 0) //display subtree to add debug

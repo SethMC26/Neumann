@@ -11,7 +11,7 @@ struct ContentView: View {
     ///Model to hold the data of our data chart
     @StateObject private var dcModel: DataChartModel = DataChartModel()
     //initial string for surface plot
-    private static let initFunc: String = "sin(2 * x) * cos(z)"
+    private static let initFunc: String = "sin(2 * x) * cos(y)"
     //Model to hold the data of surfaceplot
     //crash if first input doesnt work something is very wrong our default should ALWAYS work
     @StateObject var fModel: FuncChartModel = try! FuncChartModel(input: ContentView.initFunc)

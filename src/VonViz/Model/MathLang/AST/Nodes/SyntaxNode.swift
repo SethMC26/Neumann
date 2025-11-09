@@ -11,7 +11,7 @@ protocol SyntaxNode {
     ///   - x: x value to sample
     ///   - z: z value to sample
     /// - Returns: y or result of this syntax node
-    func eval(_ x: Double,_ z: Double) throws -> Double
+    func eval(_ x: Double,_ y: Double) throws -> Double
 }
 
 extension SyntaxNode {

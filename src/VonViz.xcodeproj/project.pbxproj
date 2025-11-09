@@ -21,6 +21,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		900C69F42EBE544F002DF993 /* VonViz.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = VonViz.xctestplan; sourceTree = "<group>"; };
 		EFF3D6742E772F8F00DC1416 /* VonViz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VonViz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFF3D6782E772F8F00DC1416 /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 		EFF3D6862E772F9200DC1416 /* VonVizTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VonVizTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -74,6 +75,7 @@
 		EFF3D66B2E772F8F00DC1416 = {
 			isa = PBXGroup;
 			children = (
+				900C69F42EBE544F002DF993 /* VonViz.xctestplan */,
 				EFF3D6762E772F8F00DC1416 /* VonViz */,
 				EFF3D6772E772F8F00DC1416 /* Packages */,
 				EFF3D6892E772F9200DC1416 /* VonVizTests */,
@@ -411,7 +413,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 7;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VonViz.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/VonViz";
-				XROS_DEPLOYMENT_TARGET = 2.5;
+				XROS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
@@ -430,7 +432,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 7;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VonViz.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/VonViz";
-				XROS_DEPLOYMENT_TARGET = 2.5;
+				XROS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};
