@@ -5,6 +5,7 @@ import Charts
 struct FuncChart : View {
     @ObservedObject var model: FuncChartModel
     @State private var function: String
+    @State private var showKeyboard: Bool = false
     
     init(model: FuncChartModel, initFunc: String) {
         self.function = initFunc
@@ -32,21 +33,42 @@ struct FuncChart : View {
             .chartZScale(domain: -1...1)
             .offset(z: -100)
                 
-            LabeledContent("Function: ") {
-                TextField("Enter function", text: $function)
-                    .multilineTextAlignment(.leading)
-                    //add box to help let user know they can tap it
-                    .textInputAutocapitalization(.never)
-                    .disableAutocorrection(true)
-                    .textFieldStyle(.roundedBorder)
-                    .onSubmit() {
-                        do {
-                            try model.setInput(function)
-                        } catch {
-                            Log.UserView.error("Error updating surfaceplot \(error)")
+            VStack(spacing: 15) {
+                LabeledContent("Function: ") {
+                    HStack {
+                        Text(function.isEmpty ? "Tap to enter function" : function)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding()
+                            .background(Color.gray.opacity(0.2))
+                            .cornerRadius(8)
+                            .onTapGesture {
+                                showKeyboard.toggle()
+                            }
+                        
+                        Button("Evaluate") {
+                            do {
+                                try model.setInput(function)
+                                showKeyboard = false
+                            } catch {
+                                Log.UserView.error("Error updating surfaceplot \(error)")
+                            }
                         }
+                        .buttonStyle(.borderedProminent)
+                        
+                        Button("Clear") {
+                            function = ""
+                        }
+                        .buttonStyle(.bordered)
                     }
-            }.frame(width: 1000).offset(z: 200)
+                }
+                .frame(width: 1000)
+                
+                if showKeyboard {
+                    MathKeyboardView(text: $function)
+                        .frame(width: 1000)
+                }
+            }
+            .offset(z: 200)
         }
     }
 }

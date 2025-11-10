@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 struct ContentView: View {
     ///Model to hold the data of our data chart
@@ -48,7 +49,7 @@ struct ContentView: View {
     ///data chart and toolbar for data visualization
     var dataChart : some View {
         return VStack {
-            if #available(visionOS 26.0, *), !dcModel.rows.isEmpty {
+            if #available(visionOS 26.0, *), !$dcModel.rows.isEmpty {
                 Chart(model: dcModel)
                     .offset(z: 100)
                     .zIndex(0)

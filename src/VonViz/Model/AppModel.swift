@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import TabularData
 
 /// AppModel is the model for the App and main model for the controllers of the app to interact with.
@@ -222,6 +223,8 @@ class DataChartModel: ObservableObject{
         }
     }
     
+    
+    @Published var displayeLimit: Int = 1000
     /// Init: load displayLimit from UserDefaults if available
     init() {
         let savedLimit = UserDefaults.standard.integer(forKey: "displayLimit")
