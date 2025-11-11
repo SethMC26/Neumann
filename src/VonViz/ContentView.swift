@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 struct ContentView: View {
     ///Model to hold the data of our data chart
@@ -15,11 +16,17 @@ struct ContentView: View {
     //Model to hold the data of surfaceplot
     //crash if first input doesnt work something is very wrong our default should ALWAYS work
     @StateObject var fModel: FuncChartModel = try! FuncChartModel(input: ContentView.initFunc)
+    /// Show user message
+    @State private var alertMessage: String?
+    /// Show settings sheet
+    @State private var showingSettings = false
     
     /// toolBar view with all main buttons of our app
     var toolBarContent: some View {
         HStack {
-            LoadButton(model: dcModel)
+            LoadButton(model: dcModel) { message in
+                alertMessage = message
+            }
             // Axis menus only if model has headers
             if !dcModel.headers.isEmpty {
                 // X axis selector
@@ -27,13 +34,22 @@ struct ContentView: View {
                 AxisButton(model: dcModel, axis: .y)
                 AxisButton(model: dcModel, axis: .z)
             }
+            // Add settings button at end
+            Button {
+                showingSettings = true
+            } label: {
+                Image(systemName: "gearshape")
+                    .imageScale(.large)
+                    .accessibilityLabel("Settings")
+            }
+            .padding(.leading, 8)
         }
     }
     
     ///data chart and toolbar for data visualization
     var dataChart : some View {
-        VStack {
-            if #available(visionOS 26.0, *), !dcModel.rows.isEmpty {
+        return VStack {
+            if #available(visionOS 26.0, *), !$dcModel.rows.isEmpty {
                 Chart(model: dcModel)
                     .offset(z: 100)
                     .zIndex(0)
@@ -49,12 +65,23 @@ struct ContentView: View {
                     .offset(z: 300)
                     .zIndex(1)
             }
+            
             toolBarContent
                 .offset(z: 500)
                 .zIndex(1)
+                .alert(alertMessage ?? "", isPresented: Binding(
+                    get: { alertMessage != nil },
+                    set: { if !$0 { alertMessage = nil } }
+                )) {
+                    Button("OK", role: .cancel) { alertMessage = nil }
+                }
+                .sheet(isPresented: $showingSettings) {
+                    SettingsSheet(model: dcModel)
+                        .presentationDetents([.medium, .large])
+                }
         }
     }
-   
+        
     @available(visionOS 26.0, *)
     var funcChart : some View {
         FuncChart(model: fModel, initFunc: ContentView.initFunc)
@@ -69,7 +96,7 @@ struct ContentView: View {
         TabView {
             if #available(visionOS 26.0, *){
                 dataChart
-                    //added the following framing to avoid clipping
+                //added the following framing to avoid clipping
                     .offset(z: -350)
                     .frame(width: 1500, height: 1500, alignment: .center)
                     .frame(depth: 1500, alignment: .back)
