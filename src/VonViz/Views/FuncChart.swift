@@ -56,7 +56,6 @@ struct FuncChart : View {
     @State private var maxVal = 4.0
     @State private var steps = 1.5
     
-    ///Toolbar for UI
     // Pull the current values for whichever axis is selected
     private func loadFields(from axis: Axis) {
         let info: AxisInfo
@@ -121,6 +120,9 @@ struct FuncChart : View {
                 
                 Button("Apply") {
                     try? model.setAxis(axis: axis, max: maxVal, min: minVal, steps: steps)
+                    //todo add error handing if min < max right now the model will throw and we silently fail
+                    // we need to let the user know what they did wrong
+                    
                     // Optional: reload from model in case it clamps/normalizes
                     loadFields(from: axis)
                 }

@@ -3,6 +3,7 @@ import Charts
 
 /// View model for the 3D function chart (surface plot).
 /// Handles parsing the input function and managing the X/Y/Z axes.
+/// Comments/Documentation created by chatGPT
 class FuncChartModel: ObservableObject {
     
     // MARK: - Published Properties
@@ -30,15 +31,15 @@ class FuncChartModel: ObservableObject {
         
         // Parse the input string into an abstract syntax tree (AST)
         ast = try Parser(input: input).parse()
-        ast.displaytree()
     }
     
     // MARK: - Function Handling
     
     /// Updates the parsed function when the user enters a new expression.
     func setInput(_ input: String) throws {
+        Log.Model.debug("Parsing string: \(input) in grammar")
         ast = try Parser(input: input).parse()
-        ast.displaytree()
+        //ast.displaytree() uncomment for debugging
     }
     
     // MARK: - Axis Handling
@@ -58,6 +59,7 @@ class FuncChartModel: ObservableObject {
             throw AppError.minGreaterThanMax
         }
         
+        Log.Model.debug("funcChart: Setting axis: \(axis) to Max: \(max) Min: \(min) Steps: \(steps)")
         // Update the appropriate axis
         switch axis {
         case .x:
