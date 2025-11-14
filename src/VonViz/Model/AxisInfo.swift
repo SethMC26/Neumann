@@ -14,7 +14,7 @@ struct AxisInfo {
     
     /// Gets the domain of this function
     /// - Returns: Closed range between min...max
-    func getDomain() throws -> ClosedRange<Double> {
+    func getDomain() -> ClosedRange<Double> {
         return min...max
     }
     

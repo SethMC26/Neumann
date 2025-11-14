@@ -158,7 +158,7 @@ class DataChartModel: ObservableObject{
             throw AppError.noLoadedDataset
         }
 
-        return try axisInfo.getDomain()
+        return axisInfo.getDomain()
     }
     
     func setAxisDomain(axis: Axis, min: Double?, max: Double?, steps: Double?) throws {
