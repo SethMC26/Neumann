@@ -23,7 +23,7 @@ struct ModelTests {
 
     @Test func axisinfo_domain_and_defaults() async throws {
         let ai = AxisInfo()
-        let domain = try ai.getDomain()
+        let domain = ai.getDomain()
         try ensure(domain.lowerBound == -50 && domain.upperBound == 50, "Expected default domain -50...50 but got \(domain)")
     }
 
@@ -121,5 +121,93 @@ struct ModelTests {
         let ai = try model.getAxisInfo(axis: .x)
         try ensure(ai.header == "X Axis" && ai.min == -50 && ai.max == 50, "Expected default AxisInfo values")
     }
+    
+    // MARK: - FuncChartModel tests (new)
+
+    @Test func funcchartmodel_defaults_and_domains() async throws {
+        let fm = try FuncChartModel(input: "x")
+        // Defaults
+        try ensure(fm.xAxis.header == "x" && fm.yAxis.header == "y" && fm.zAxis.header == "z",
+                   "Axis headers should default to x/y/z")
+        try ensure(fm.xAxis.min == -5 && fm.xAxis.max == 5 && fm.xAxis.steps == 1,
+                   "X defaults should be -5...5 step 1")
+        try ensure(fm.yAxis.min == -5 && fm.yAxis.max == 5 && fm.yAxis.steps == 1,
+                   "Y defaults should be -5...5 step 1")
+        try ensure(fm.zAxis.min == -5 && fm.zAxis.max == 5 && fm.zAxis.steps == 1,
+                   "Z defaults should be -5...5 step 1")
+    }
+
+    @Test func funcchartmodel_setAxis_updates_correct_axis_only() async throws {
+        var fm = try FuncChartModel(input: "x + y")
+
+        // Capture originals to ensure others don't mutate
+        let yBefore = fm.yAxis
+        let zBefore = fm.zAxis
+
+        try fm.setAxis(axis: .x, max: 10, min: -10, steps: 0.5)
+
+        try ensure(fm.xAxis.min == -10 && fm.xAxis.max == 10 && fm.xAxis.steps == 0.5,
+                   "setAxis(.x) should update X axis values")
+        try ensure(fm.yAxis.min == yBefore.min && fm.yAxis.max == yBefore.max && fm.yAxis.steps == yBefore.steps,
+                   "setAxis(.x) should NOT mutate Y")
+        try ensure(fm.zAxis.min == zBefore.min && fm.zAxis.max == zBefore.max && fm.zAxis.steps == zBefore.steps,
+                   "setAxis(.x) should NOT mutate Z")
+    }
+
+    @Test func funcchartmodel_setAxis_throws_when_min_greater_than_max() async throws {
+        var fm = try FuncChartModel(input: "x")
+        do {
+            try fm.setAxis(axis: .y, max: 0, min: 1, steps: 1)
+            throw TestFailure.fail("Expected setAxis to throw when min > max")
+        } catch let e as AppError {
+            try ensure(e == .minGreaterThanMax, "Expected .minGreaterThanMax but got \(e)")
+        }
+    }
+
+    @Test func funcchartmodel_setAxis_allows_equal_min_max() async throws {
+        var fm = try FuncChartModel(input: "x")
+        // min == max is allowed by the model (guard min <= max)
+        try fm.setAxis(axis: .z, max: 2.0, min: 2.0, steps: 1.0)
+        try ensure(fm.zAxis.min == 2.0 && fm.zAxis.max == 2.0,
+                   "min==max should be allowed and set on Z axis")
+    }
+
+    @Test func funcchartmodel_setInput_reparses_and_keeps_axes() async throws {
+        var fm = try FuncChartModel(input: "x+1")
+        // Change axes to non-defaults
+        try fm.setAxis(axis: .x, max: 20, min: -20, steps: 2)
+
+        // Evaluate before changing input
+        let before = try fm.ast.eval(2.0, 0.0) // x=2 -> 3
+        try ensure(before == 3.0, "Expected x+1 at x=2 to be 3 before update")
+
+        // Update function
+        try fm.setInput("x*2")
+
+        // Evaluate after changing input
+        let after = try fm.ast.eval(2.0, 0.0) // x=2 -> 4
+        try ensure(after == 4.0, "Expected x*2 at x=2 to be 4 after update")
+
+        // Axes should remain as previously set
+        try ensure(fm.xAxis.min == -20 && fm.xAxis.max == 20 && fm.xAxis.steps == 2,
+                   "setInput should NOT reset axis configuration")
+    }
+
+    @Test func funcchartmodel_setAxis_updates_each_axis_path() async throws {
+        var fm = try FuncChartModel(input: "x+y")
+
+        try fm.setAxis(axis: .x, max: 9, min: -9, steps: 3)
+        try ensure(fm.xAxis.min == -9 && fm.xAxis.max == 9 && fm.xAxis.steps == 3,
+                   "X axis should update via .x path")
+
+        try fm.setAxis(axis: .y, max: 8, min: -8, steps: 2)
+        try ensure(fm.yAxis.min == -8 && fm.yAxis.max == 8 && fm.yAxis.steps == 2,
+                   "Y axis should update via .y path")
+
+        try fm.setAxis(axis: .z, max: 7, min: -7, steps: 1)
+        try ensure(fm.zAxis.min == -7 && fm.zAxis.max == 7 && fm.zAxis.steps == 1,
+                   "Z axis should update via .z path")
+    }
+
 
 }
