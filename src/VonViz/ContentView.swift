@@ -24,6 +24,7 @@ struct ContentView: View {
     /// toolBar view with all main buttons of our app
     var toolBarContent: some View {
         HStack {
+            
             LoadButton(model: dcModel) { message in
                 alertMessage = message
             }
