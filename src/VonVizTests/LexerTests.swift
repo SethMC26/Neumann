@@ -1,20 +1,3 @@
-/*
- *   Copyright (C) 2025  Seth Holtzman
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 /**
  MathLang Lexer Test Suite
  =========================
@@ -41,7 +24,6 @@ import Testing
 @Suite("MathLang Lexer Tests")
 struct LexerTests {
 
-    // ... unchanged test code ...
     /**
      Test numeric tokenization and operator parsing.
      
@@ -67,5 +49,118 @@ struct LexerTests {
         #expect(t3.type == .EOF, "Expected EOF but got \(t3)")
     }
 
-    // (rest of the tests remain exactly the same)
+    /**
+     Test operator and function tokenization.
+
+     Verifies correct recognition of:
+      - Basic operators (`+`, `-`, `*`, `/`)
+      - Multi-character operators (`**` for exponent, `//` for root)
+      - Parentheses
+      - Variables (`x`, `z`)
+      - Function identifiers (`sin`, `cos`, `tan`)
+      - Unknown identifiers
+     */
+    @Test("Operators and function tokens")
+    func lexer_operators_and_funcs() throws {
+        let input = "+ - ** * // / ( ) x y sin( cos( tan( abc"
+        let lex = Lexer(input: input)
+
+        var t = lex.nextToken(); #expect(t.type == .ADD, "Expected ADD but got \(t)")
+        t = lex.nextToken(); #expect(t.type == .SUB, "Expected SUB but got \(t)")
+        t = lex.nextToken(); #expect(t.type == .EXP, "Expected EXP(**) but got \(t)")
+        t = lex.nextToken(); #expect(t.type == .MULT, "Expected MULT but got \(t)")
+        t = lex.nextToken(); #expect(t.type == .ROOT, "Expected ROOT(//) but got \(t)")
+        t = lex.nextToken(); #expect(t.type == .DIV, "Expected DIV but got \(t)")
+        t = lex.nextToken(); #expect(t.type == .LPAREN, "Expected LPAREN but got \(t)")
+        t = lex.nextToken(); #expect(t.type == .RPAREN, "Expected RPAREN but got \(t)")
+        t = lex.nextToken(); #expect(t.type == .X, "Expected X but got \(t)")
+        t = lex.nextToken(); #expect(t.type == .Y, "Expected Y but got \(t)")
+        t = lex.nextToken(); #expect(t.type == .SIN, "Expected SIN but got \(t)")
+        t = lex.nextToken(); #expect(t.type == .LPAREN, "Expected LPAREN but got \(t)") // need character to seperate math funcs
+        t = lex.nextToken(); #expect(t.type == .COS, "Expected COS but got \(t)")
+        t = lex.nextToken(); #expect(t.type == .LPAREN, "Expected LPAREN but got \(t)")
+        t = lex.nextToken(); #expect(t.type == .TAN, "Expected TAN but got \(t)")
+        t = lex.nextToken(); #expect(t.type == .LPAREN, "Expected LPAREN but got \(t)")
+        t = lex.nextToken(); #expect(t.type == .UNKNOWN && t.val == "abc", "Expected UNKNOWN(abc) but got \(t)")
+        t = lex.nextToken(); #expect(t.type == .EOF, "Expected EOF but got \(t)")
+    }
+
+    /**
+     Test unknown token handling.
+     
+     Ensures that non-recognized symbols are returned as `.UNKNOWN` tokens
+     and that the lexer ends with `.EOF`.
+     */
+    @Test("Unknown tokens")
+    func lexer_unknown_token() throws {
+        let lex = Lexer(input: "@ # abc")
+
+        var t = lex.nextToken()
+        #expect(t.type == .UNKNOWN && t.val == "@", "Expected UNKNOWN(@) but got \(t)")
+
+        t = lex.nextToken()
+        #expect(t.type == .UNKNOWN && t.val == "#", "Expected UNKNOWN(#) but got \(t)")
+
+        t = lex.nextToken()
+        #expect(t.type == .UNKNOWN && t.val == "abc", "Expected UNKNOWN(abc) but got \(t)")
+
+        t = lex.nextToken()
+        #expect(t.type == .EOF, "Expected EOF but got \(t)")
+    }
+
+    /**
+     Test handling of a leading dot followed by digits.
+     
+     Verifies that:
+      - A leading '.' not followed by digits is `.UNKNOWN`
+      - Subsequent digits form a `.NUMBER`
+     */
+    @Test("Leading dot followed by digit")
+    func lexer_leading_dot_number() throws {
+        let lex = Lexer(input: ".5")
+
+        var t = lex.nextToken()
+        #expect(t.type == .UNKNOWN && t.val == ".", "Expected UNKNOWN('.') for leading dot but got \(t)")
+
+        t = lex.nextToken()
+        #expect(t.type == .NUMBER && t.val == "5", "Expected NUMBER(5) after dot but got \(t)")
+    }
+    
+    @Test("EOF after identifier")
+    func eof_after_identifier() {
+        let lex = Lexer(input: "abc")
+        var t = lex.nextToken(); #expect(t.type == .UNKNOWN && t.val == "abc")
+        t = lex.nextToken();     #expect(t.type == .EOF)
+    }
+
+    @Test("EOF after number")
+    func eof_after_number() {
+        let lex = Lexer(input: "123")
+        var t = lex.nextToken(); #expect(t.type == .NUMBER && t.val == "123")
+        t = lex.nextToken();     #expect(t.type == .EOF)
+    }
+
+    @Test("EOF after single * or /")
+    func eof_after_single_star_or_slash() {
+        var lex = Lexer(input: "*")
+        var t = lex.nextToken(); #expect(t.type == .MULT)
+        t = lex.nextToken();     #expect(t.type == .EOF)
+
+        lex = Lexer(input: "/")
+        t = lex.nextToken();     #expect(t.type == .DIV)
+        t = lex.nextToken();     #expect(t.type == .EOF)
+    }
+
+    @Test("EOF after ** and //")
+    func eof_after_double_ops() {
+        var lex = Lexer(input: "**")
+        var t = lex.nextToken(); #expect(t.type == .EXP)
+        t = lex.nextToken();     #expect(t.type == .EOF)
+
+        lex = Lexer(input: "//")
+        t = lex.nextToken();     #expect(t.type == .ROOT)
+        t = lex.nextToken();     #expect(t.type == .EOF)
+    }
+
 }
+
