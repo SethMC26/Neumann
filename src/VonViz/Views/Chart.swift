@@ -61,37 +61,31 @@ struct Chart : View {
             return Array(stride(from: info.min, through: info.max, by: info.steps))
         }()
 
-        if #available(visionOS 26.0, *) {
-            //add chart with rows, labels and scale
-            Chart3D(model.rows) { (row: Row) in
-                PointMark(
-                    x: .value(xLabel, row.x),
-                    y: .value(yLabel, row.y),
-                    z: .value(zLabel, row.z)
-                )
-            }
-            .chartXAxisLabel(xLabel)
-            .chartYAxisLabel(yLabel)
-            .chartZAxisLabel(zLabel)
-            .chartXScale(domain: xDom, range: .plotDimension(padding: 750))
-            .chartYScale(domain: yDom, range: .plotDimension(padding: 750))
-            .chartZScale(domain: zDom, range: .plotDimension(padding: 750))
-            // Use steps to control tick marks when provided
-            .chartXAxis {
-                // If xTicks is empty, Charts will auto-generate marks
-                AxisMarks(values: xTicks)
-            }
-            .chartYAxis {
-                AxisMarks(values: yTicks)
-            }
-            .chartZAxis {
-                AxisMarks(values: zTicks)
-            }
-            
+        //add chart with rows, labels and scale
+        Chart3D(model.rows) { (row: Row) in
+            PointMark(
+                x: .value(xLabel, row.x),
+                y: .value(yLabel, row.y),
+                z: .value(zLabel, row.z)
+            )
         }
-        //not avaiable show placeholder; User error they must update AVP
-        else {
-            ContentUnavailableView("Only VisionOS 26 or newer is supported", systemImage: "tray")
+        .chartXAxisLabel(xLabel)
+        .chartYAxisLabel(yLabel)
+        .chartZAxisLabel(zLabel)
+        .chartXScale(domain: xDom, range: .plotDimension(padding: 750))
+        .chartYScale(domain: yDom, range: .plotDimension(padding: 750))
+        .chartZScale(domain: zDom, range: .plotDimension(padding: 750))
+        // Use steps to control tick marks when provided
+        .chartXAxis {
+            // If xTicks is empty, Charts will auto-generate marks
+            AxisMarks(values: xTicks)
         }
+        .chartYAxis {
+            AxisMarks(values: yTicks)
+        }
+        .chartZAxis {
+            AxisMarks(values: zTicks)
+        }
+        
     }
 }

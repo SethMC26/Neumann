@@ -18,7 +18,6 @@
 import SwiftUI
 import Charts
 
-@available(visionOS 26.0, *)
 ///Function Chart view aka Surface Plot
 struct FuncChart : View {
     ///Internal Model for view
