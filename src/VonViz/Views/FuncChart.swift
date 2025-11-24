@@ -53,17 +53,12 @@ struct FuncChart : View {
                                 Log.UserView.error("Error updating surfaceplot \(error)")
                             }
                         }
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+
                         .buttonStyle(.borderedProminent)
                         
                         Button("Clear") {
                             function = ""
                         }
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
                         .buttonStyle(.bordered)
                     }
                 }
