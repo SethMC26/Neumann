@@ -8,6 +8,8 @@ class DataChartModel: ObservableObject{
     private let DISPLAY_LIMIT: Int = 1000
     /// Data that the user has imported, nil is none has been imported yet
     private var data: DataFrame? = nil
+    @Published var displayeLimit: Int = 1000
+
     
     /// Map of axis and header associated with axis to display
     private var axes: [Axis: AxisInfo] = [
@@ -15,6 +17,7 @@ class DataChartModel: ObservableObject{
         .y : AxisInfo(header: "Y Axis"),
         .z : AxisInfo(header: "Z Axis")
     ]
+<<<<<<< Updated upstream
     /// Make display limit user-configurable
     @Published var displayLimit: Int {
        didSet {
@@ -22,6 +25,12 @@ class DataChartModel: ObservableObject{
            UserDefaults.standard.set(displayLimit, forKey: "displayLimit")
        }
     }
+=======
+<<<<<<< Updated upstream
+=======
+    /// Make display limit user-configurable
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     /// All headers of columns that can be changed
     @Published var headers: [String] = []
     /// Rows of dataset updated when new file loaded or axis to display is changed
@@ -222,6 +231,7 @@ class DataChartModel: ObservableObject{
             throw AppError.internalStateError
         }
     }
+<<<<<<< Updated upstream
     
     
     @Published var displayeLimit: Int = 1000
@@ -234,4 +244,6 @@ class DataChartModel: ObservableObject{
             self.displayLimit = 1000
         }
     }
+=======
+>>>>>>> Stashed changes
 }

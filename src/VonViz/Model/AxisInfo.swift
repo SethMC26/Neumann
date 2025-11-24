@@ -1,5 +1,4 @@
 import Foundation
-import SwiftUI
 import TabularData
 
 /// AxisInfo is a struct holding information for the x y or z axis displayed
