@@ -49,7 +49,11 @@ struct MathKeyboardView: View {
                 KeyButton(".", text: $text)
                 KeyButton("x", text: $text)
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 KeyButton("z", text: $text)
+=======
+                KeyButton("y", text: $text)
+>>>>>>> Stashed changes
 =======
                 KeyButton("y", text: $text)
 >>>>>>> Stashed changes

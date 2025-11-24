@@ -18,6 +18,7 @@ class DataChartModel: ObservableObject{
         .z : AxisInfo(header: "Z Axis")
     ]
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     /// Make display limit user-configurable
     @Published var displayLimit: Int {
        didSet {
@@ -27,6 +28,11 @@ class DataChartModel: ObservableObject{
     }
 =======
 <<<<<<< Updated upstream
+=======
+    /// Make display limit user-configurable
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
+=======
 =======
     /// Make display limit user-configurable
 >>>>>>> Stashed changes

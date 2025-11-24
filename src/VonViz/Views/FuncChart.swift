@@ -54,11 +54,14 @@ struct FuncChart : View {
                             }
                         }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                         .buttonStyle(.borderedProminent)
                         
                         Button("Clear") {
                             function = ""
                         }
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
                         .buttonStyle(.bordered)
