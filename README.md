@@ -13,3 +13,6 @@ https://docs.google.com/document/d/1di0hmVVpLvBlKFenA-8kkR31mgci4VnPpNHRg9MaDP0/
 
 ## Functional Specification 
 https://docs.google.com/document/d/1SQBXQbUjqS2LLoCnjhjYLIRzyWLuwVce7hs8QsRnFZk/edit?usp=drivesdk
+
+## Poster
+https://www.canva.com/design/DAG4_M9Hrho/QXmJZKaJLydZ97DEbJEKgQ/view?utm_content=DAG4_M9Hrho&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h169b628fff

@@ -1,3 +1,20 @@
+/*
+ *   Copyright (C) 2025  Seth Holtzman
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 //
 //  ContentView.swift
 //  VonViz
@@ -33,7 +50,7 @@ struct ContentView: View {
     ///data chart and toolbar for data visualization
     var dataChart : some View {
         VStack {
-            if #available(visionOS 26.0, *), !dcModel.rows.isEmpty {
+            if !dcModel.rows.isEmpty {
                 Chart(model: dcModel)
                     .offset(z: 100)
                     .zIndex(0)
@@ -55,7 +72,6 @@ struct ContentView: View {
         }
     }
    
-    @available(visionOS 26.0, *)
     var funcChart : some View {
         FuncChart(model: fModel, initFunc: ContentView.initFunc)
             .tabItem{
@@ -67,18 +83,15 @@ struct ContentView: View {
     var body: some View {
         //tab view to switch between data visualization and function visualization
         TabView {
-            if #available(visionOS 26.0, *){
-                dataChart
-                    //added the following framing to avoid clipping
-                    .offset(z: -350)
-                    .frame(width: 1500, height: 1500, alignment: .center)
-                    .frame(depth: 1500, alignment: .back)
-                    .tabItem {
-                        Text("Data Chart")
-                    }
-                funcChart
-            }
-            
+            dataChart
+                //added the following framing to avoid clipping
+                .offset(z: -350)
+                .frame(width: 1500, height: 1500, alignment: .center)
+                .frame(depth: 1500, alignment: .back)
+                .tabItem {
+                    Text("Data Chart")
+                }
+            funcChart
         }
     }
 }
