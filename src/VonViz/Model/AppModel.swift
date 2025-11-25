@@ -71,7 +71,7 @@ class DataChartModel: ObservableObject{
         //remove old data
         data = try DataFrame(contentsOfCSVFile: file)
         rows = []
-        
+        headers = []
         //reset axes map
         axes = [
             .x : AxisInfo(),
