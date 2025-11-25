@@ -9,7 +9,7 @@ class DataChartModel: ObservableObject{
     /// Data that the user has imported, nil is none has been imported yet
     private var data: DataFrame? = nil
     @Published var displayeLimit: Int = 1000
-
+    
     
     /// Map of axis and header associated with axis to display
     private var axes: [Axis: AxisInfo] = [
@@ -17,30 +17,27 @@ class DataChartModel: ObservableObject{
         .y : AxisInfo(header: "Y Axis"),
         .z : AxisInfo(header: "Z Axis")
     ]
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+    
     /// Make display limit user-configurable
     @Published var displayLimit: Int {
-       didSet {
-           // Optionally persist value
-           UserDefaults.standard.set(displayLimit, forKey: "displayLimit")
-       }
+        didSet {
+            // Optionally persist value
+            UserDefaults.standard.set(displayLimit, forKey: "displayLimit")
+        }
     }
-=======
-<<<<<<< Updated upstream
-=======
-    /// Make display limit user-configurable
->>>>>>> Stashed changes
->>>>>>> Stashed changes
-=======
-=======
-    /// Make display limit user-configurable
->>>>>>> Stashed changes
->>>>>>> Stashed changes
+    
     /// All headers of columns that can be changed
     @Published var headers: [String] = []
     /// Rows of dataset updated when new file loaded or axis to display is changed
     @Published var rows: [Row] = []
+    
+    // --- ADD THIS INITIALIZER ---
+    init() {
+        // Try to load displayLimit from UserDefaults, fallback to 1000
+        let savedLimit = UserDefaults.standard.integer(forKey: "displayLimit")
+        self.displayLimit = savedLimit == 0 ? 1000 : savedLimit
+    }
+    // --- END INITIALIZER ---
     
     /// Set an Axis to be associated with a particular header
     /// - Parameters:
@@ -117,7 +114,7 @@ class DataChartModel: ObservableObject{
         try axes[.z]?.setValues(header: col_names[2], column: df[col_names[2]])
         
         Log.Model.debug("Set default Axis \(axes) and sliced dataframe")
-
+        
         try render()
     }
     
@@ -180,7 +177,7 @@ class DataChartModel: ObservableObject{
             Log.Model.error("No dataset loaded")
             throw AppError.noLoadedDataset
         }
-
+        
         return try axisInfo.getDomain()
     }
     
@@ -228,28 +225,14 @@ class DataChartModel: ObservableObject{
         case let d as Double: return d
         case let i as Int:    return Double(i)
         case let f as Float:  return Double(f)
-        //if we are missing a value then return NaN
+            //if we are missing a value then return NaN
         case Optional<Any>.none, is NSNull:
             return Double.nan
-        //throw internalStateError we should only be calling this function on values we know will be an Int Double or Float
+            //throw internalStateError we should only be calling this function on values we know will be an Int Double or Float
         default:
             Log.Model.fault("Non-numeric type - we should have already filtered these columns out")
             throw AppError.internalStateError
         }
     }
-<<<<<<< Updated upstream
-    
-    
-    @Published var displayeLimit: Int = 1000
-    /// Init: load displayLimit from UserDefaults if available
-    init() {
-        let savedLimit = UserDefaults.standard.integer(forKey: "displayLimit")
-        if savedLimit > 0 {
-            self.displayLimit = savedLimit
-        } else {
-            self.displayLimit = 1000
-        }
-    }
-=======
->>>>>>> Stashed changes
 }
+
