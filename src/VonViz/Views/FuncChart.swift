@@ -99,38 +99,23 @@ struct FuncChart : View {
                         .cornerRadius(8)
                         .onTapGesture { showKeyboard.toggle() }
                         .popover(isPresented: $showKeyboard, attachmentAnchor: .rect(.bounds), arrowEdge: .bottom) {
-                            // Fully visible keyboard, no scrolling, explicit size to avoid clipping
-                            MathKeyboardView(text: $function)
-                                .padding(12)
-                                // Ensure the popover has a concrete size that fits the keyboard
-                                // Tune these numbers if you change the keyboard layout later.
-                                .frame(width: 720, height: 360)   // wide and tall enough for all rows
-                                // Optional: scale keys a touch larger for comfort
-                                .scaleEffect(1.05)
-                                // Keep the “closer” depth if desired
-                                .offset(z: 1000)
-                                // Move the popover down relative to the anchor (positive is down)
-                                .offset(y: 100)
+                            // Larger, fully visible keyboard; shifted left to avoid right-edge clipping
+                            MathKeyboardView(text: $function, onEvaluate: {
+                                do {
+                                    try model.setInput(function)
+                                    showKeyboard = false
+                                } catch {
+                                    // Keep the keyboard open so the user can fix the input
+                                    Log.UserView.error("Error updating surfaceplot \(error)")
+                                }
+                            })
+                            .padding(12)
+                            .frame(width: 900, height: 560)  // wider & taller to ensure full visibility
+                            //.offset(x: -220)                 // shift left so right side isn't clipped
+                            .offset(z: 1200)                 // keep it closer to the user
+                            .offset(y: 50)                   // move down a bit
                         }
                         .layoutPriority(1) // keep this from collapsing
-                    
-                    Button("Evaluate") {
-                        do {
-                            try model.setInput(function)
-                            showKeyboard = false
-                        } catch {
-                            Log.UserView.error("Error updating surfaceplot \(error)")
-                        }
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                    .frame(minWidth: 150)
-                    
-                    Button("Clear") {
-                        function = ""
-                    }
-                    .buttonStyle(.bordered)
-                    .frame(minWidth: 90)
                 }
             }
             // Initial load + update when axis changes
