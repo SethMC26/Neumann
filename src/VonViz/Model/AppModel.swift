@@ -4,12 +4,9 @@ import TabularData
 
 /// AppModel is the model for the App and main model for the controllers of the app to interact with.
 class DataChartModel: ObservableObject{
-    /// limit to data that can be displayed
-    private let DISPLAY_LIMIT: Int = 1000
     /// Data that the user has imported, nil is none has been imported yet
     private var data: DataFrame? = nil
-    @Published var displayeLimit: Int = 1000
-    
+    @Published var displayLimit: Int = 1000
     
     /// Map of axis and header associated with axis to display
     private var axes: [Axis: AxisInfo] = [
@@ -18,25 +15,12 @@ class DataChartModel: ObservableObject{
         .z : AxisInfo(header: "Z Axis")
     ]
     
-    /// Make display limit user-configurable
-    @Published var displayLimit: Int {
-        didSet {
-            // Optionally persist value
-            UserDefaults.standard.set(displayLimit, forKey: "displayLimit")
-        }
-    }
     
     /// All headers of columns that can be changed
     @Published var headers: [String] = []
     /// Rows of dataset updated when new file loaded or axis to display is changed
     @Published var rows: [Row] = []
     
-    // --- ADD THIS INITIALIZER ---
-    init() {
-        // Try to load displayLimit from UserDefaults, fallback to 1000
-        let savedLimit = UserDefaults.standard.integer(forKey: "displayLimit")
-        self.displayLimit = savedLimit == 0 ? 1000 : savedLimit
-    }
     // --- END INITIALIZER ---
     
     /// Set an Axis to be associated with a particular header
@@ -155,10 +139,6 @@ class DataChartModel: ObservableObject{
             }
             newRows.append(Row(id: data.index, x:  colOne, y:  colTwo, z: colThree))
             
-            if newRows.count > DISPLAY_LIMIT {
-                Log.Model.info("Reached display limit \(DISPLAY_LIMIT)")
-                break
-            }
         }
         
         //change state of row at the end once all rows loaded
@@ -219,6 +199,7 @@ class DataChartModel: ObservableObject{
         
         return axisInfo
     }
+    
     /// chatGPT generated function to return a number value as a double
     private func asDouble(_ value: Any?) throws -> Double {
         switch value {
@@ -234,5 +215,5 @@ class DataChartModel: ObservableObject{
             throw AppError.internalStateError
         }
     }
+    
 }
-
