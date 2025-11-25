@@ -37,9 +37,7 @@ class DataChartModel: ObservableObject{
     @Published var headers: [String] = []
     /// Rows of dataset updated when new file loaded or axis to display is changed
     @Published var rows: [Row] = []
-    
-    // --- END INITIALIZER ---
-    
+        
     /// Set an Axis to be associated with a particular header
     /// - Parameters:
     ///   - axisToSet: Axis to set
@@ -156,6 +154,10 @@ class DataChartModel: ObservableObject{
             }
             newRows.append(Row(id: data.index, x:  colOne, y:  colTwo, z: colThree))
             
+            if newRows.count > displayLimit {
+                Log.Model.info("Reached display limit \(displayLimit)")
+                break
+            }
         }
         
         //change state of row at the end once all rows loaded

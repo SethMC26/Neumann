@@ -27,6 +27,12 @@ struct SettingsSheet: View {
                             model.displayLimit = newLimit
                         }
                         dismiss()
+                        do {
+                            try model.render()
+                        }
+                        catch {
+                            Log.UserView.error("Error rendering new chart \(error)")
+                        }
                     }
                 }
             }
