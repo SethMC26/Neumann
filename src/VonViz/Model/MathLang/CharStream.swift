@@ -1,9 +1,28 @@
+/*
+ *   Copyright (C) 2025  Seth Holtzman
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 /// Character Stream for MathLang
 class CharStream {
     /// Characters in this stream
     private let characters: String
     /// Current index of the stream
     private var currCharIndex: String.Index
+    ///Keep track of if last read aws EOF
+    private var lastReadWasEOF = false
     
     /// Create new Character Stream
     /// - Parameter characters: String to create the stream from(values will be lowercased automatically)
@@ -25,6 +44,7 @@ class CharStream {
         //check if we are at end of the string
         if currCharIndex >= characters.endIndex {
             currCharIndex = characters.endIndex
+            lastReadWasEOF = true
             return (.EOF, "\0")
         }
         
@@ -33,13 +53,18 @@ class CharStream {
         
         //increment for next read
         currCharIndex = characters.index(after: currCharIndex)
-
+        //last Read was not EOF
+        lastReadWasEOF = false
         //return current char and char type
         return charTuple
     }
     
     /// Rewinds the stream by 1
     func unread() {
+        // If the previous read() returned EOF, we didn't advance; do nothing.
+        if lastReadWasEOF { return } 
+        
+        //check if we are at end of the string
         if currCharIndex <= characters.startIndex {
             Log.Lang.error("CharStream: Tried to unread first character! This is not possible")
             return

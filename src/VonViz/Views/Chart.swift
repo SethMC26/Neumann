@@ -1,3 +1,20 @@
+/*
+ *   Copyright (C) 2025  Seth Holtzman
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import SwiftUI
 import Charts
 
@@ -44,37 +61,31 @@ struct Chart : View {
             return Array(stride(from: info.min, through: info.max, by: info.steps))
         }()
 
-        if #available(visionOS 26.0, *) {
-            //add chart with rows, labels and scale
-            Chart3D(model.rows) { (row: Row) in
-                PointMark(
-                    x: .value(xLabel, row.x),
-                    y: .value(yLabel, row.y),
-                    z: .value(zLabel, row.z)
-                )
-            }
-            .chartXAxisLabel(xLabel)
-            .chartYAxisLabel(yLabel)
-            .chartZAxisLabel(zLabel)
-            .chartXScale(domain: xDom, range: .plotDimension(padding: 750))
-            .chartYScale(domain: yDom, range: .plotDimension(padding: 750))
-            .chartZScale(domain: zDom, range: .plotDimension(padding: 750))
-            // Use steps to control tick marks when provided
-            .chartXAxis {
-                // If xTicks is empty, Charts will auto-generate marks
-                AxisMarks(values: xTicks)
-            }
-            .chartYAxis {
-                AxisMarks(values: yTicks)
-            }
-            .chartZAxis {
-                AxisMarks(values: zTicks)
-            }
-            
+        //add chart with rows, labels and scale
+        Chart3D(model.rows) { (row: Row) in
+            PointMark(
+                x: .value(xLabel, row.x),
+                y: .value(yLabel, row.y),
+                z: .value(zLabel, row.z)
+            )
         }
-        //not avaiable show placeholder; User error they must update AVP
-        else {
-            ContentUnavailableView("Only VisionOS 26 or newer is supported", systemImage: "tray")
+        .chartXAxisLabel(xLabel)
+        .chartYAxisLabel(yLabel)
+        .chartZAxisLabel(zLabel)
+        .chartXScale(domain: xDom, range: .plotDimension(padding: 750))
+        .chartYScale(domain: yDom, range: .plotDimension(padding: 750))
+        .chartZScale(domain: zDom, range: .plotDimension(padding: 750))
+        // Use steps to control tick marks when provided
+        .chartXAxis {
+            // If xTicks is empty, Charts will auto-generate marks
+            AxisMarks(values: xTicks)
         }
+        .chartYAxis {
+            AxisMarks(values: yTicks)
+        }
+        .chartZAxis {
+            AxisMarks(values: zTicks)
+        }
+        
     }
 }

@@ -1,3 +1,20 @@
+/*
+ *   Copyright (C) 2025  Seth Holtzman
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 //
 //  ContentView.swift
 //  VonViz
@@ -12,7 +29,7 @@ struct ContentView: View {
     ///Model to hold the data of our data chart
     @StateObject private var dcModel: DataChartModel = DataChartModel()
     //initial string for surface plot
-    private static let initFunc: String = "sin(2 * x) * cos(z)"
+    private static let initFunc: String = "sin(2 * x) * cos(y)"
     //Model to hold the data of surfaceplot
     //crash if first input doesnt work something is very wrong our default should ALWAYS work
     @StateObject var fModel: FuncChartModel = try! FuncChartModel(input: ContentView.initFunc)
@@ -49,8 +66,8 @@ struct ContentView: View {
     
     ///data chart and toolbar for data visualization
     var dataChart : some View {
-        return VStack {
-            if #available(visionOS 26.0, *), !$dcModel.rows.isEmpty {
+        VStack {
+            if !dcModel.rows.isEmpty {
                 Chart(model: dcModel)
                     .offset(z: 100)
                     .zIndex(0)
@@ -82,31 +99,27 @@ struct ContentView: View {
                 }
         }
     }
-        
-    @available(visionOS 26.0, *)
-    var funcChart : some View {
-        FuncChart(model: fModel, initFunc: ContentView.initFunc)
-            .tabItem{
-                Text("Surface Plot")
-            }
-        
-    }
-    
-    var body: some View {
-        //tab view to switch between data visualization and function visualization
-        TabView {
-            if #available(visionOS 26.0, *){
-                dataChart
-                //added the following framing to avoid clipping
-                    .offset(z: -350)
-                    .frame(width: 1500, height: 1500, alignment: .center)
-                    .frame(depth: 1500, alignment: .back)
-                    .tabItem {
-                        Text("Data Chart")
+           
+            var funcChart : some View {
+                FuncChart(model: fModel, initFunc: ContentView.initFunc)
+                    .tabItem{
+                        Text("Surface Plot")
                     }
-                funcChart
+                
             }
             
+            var body: some View {
+                //tab view to switch between data visualization and function visualization
+                TabView {
+            dataChart
+                //added the following framing to avoid clipping
+                .offset(z: -350)
+                .frame(width: 1500, height: 1500, alignment: .center)
+                .frame(depth: 1500, alignment: .back)
+                .tabItem {
+                    Text("Data Chart")
+                }
+            funcChart
         }
     }
 }

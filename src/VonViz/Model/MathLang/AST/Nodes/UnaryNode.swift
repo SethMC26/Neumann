@@ -15,29 +15,20 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-///This file holds miscalleounus enums and structs that are small and uncomplex for use in Model. 
-
-///Errors that can be thrown by our app
-enum AppError: Error {
-    case noLoadedDataset
-    case notEnoughColumns
-    case headerNotRecongized
-    case internalStateError
-    case minGreaterThanMax
-}
-
-
-/// Axis with x y and z
-enum Axis {
-    case x
-    case y
-    case z
-}
-
-/// Row of data for use in Chart3D
-struct Row : Identifiable {
-    let id: Int
-    let x: Double
-    let y: Double
-    let z: Double
+///This node represents a UnaryNode in our AST currenty only minus
+struct UnaryNode : SyntaxNode {
+    ///Node to minus
+    let node : SyntaxNode
+    
+    ///Take the node and times negative 1 to it
+    func eval(_ x: Double, _ y: Double) throws -> Double {
+        let evalNode = try node.eval(x,y)
+        return -1 * evalNode
+    }
+    
+    func displaySubtree(identAmt: Int) {
+        printIdent("UnaryNode[-](", identAmt)
+        node.displaySubtree(identAmt: identAmt + 2)
+        printIdent(")", identAmt)
+    }
 }
