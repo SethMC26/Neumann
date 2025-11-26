@@ -16,14 +16,14 @@
  */
 
 import Foundation
+import SwiftUI
 import TabularData
 
 /// AppModel is the model for the App and main model for the controllers of the app to interact with.
 class DataChartModel: ObservableObject{
-    /// limit to data that can be displayed
-    private let DISPLAY_LIMIT: Int = 1000
     /// Data that the user has imported, nil is none has been imported yet
     private var data: DataFrame? = nil
+    @Published var displayLimit: Int = 1000
     
     /// Map of axis and header associated with axis to display
     private var axes: [Axis: AxisInfo] = [
@@ -31,11 +31,13 @@ class DataChartModel: ObservableObject{
         .y : AxisInfo(header: "Y Axis"),
         .z : AxisInfo(header: "Z Axis")
     ]
+    
+    
     /// All headers of columns that can be changed
     @Published var headers: [String] = []
     /// Rows of dataset updated when new file loaded or axis to display is changed
     @Published var rows: [Row] = []
-    
+        
     /// Set an Axis to be associated with a particular header
     /// - Parameters:
     ///   - axisToSet: Axis to set
@@ -69,7 +71,7 @@ class DataChartModel: ObservableObject{
         //remove old data
         data = try DataFrame(contentsOfCSVFile: file)
         rows = []
-        
+        headers = []
         //reset axes map
         axes = [
             .x : AxisInfo(),
@@ -111,7 +113,7 @@ class DataChartModel: ObservableObject{
         try axes[.z]?.setValues(header: col_names[2], column: df[col_names[2]])
         
         Log.Model.debug("Set default Axis \(axes) and sliced dataframe")
-
+        
         try render()
     }
     
@@ -152,8 +154,8 @@ class DataChartModel: ObservableObject{
             }
             newRows.append(Row(id: data.index, x:  colOne, y:  colTwo, z: colThree))
             
-            if newRows.count > DISPLAY_LIMIT {
-                Log.Model.info("Reached display limit \(DISPLAY_LIMIT)")
+            if newRows.count > displayLimit {
+                Log.Model.info("Reached display limit \(displayLimit)")
                 break
             }
         }
@@ -174,7 +176,7 @@ class DataChartModel: ObservableObject{
             Log.Model.error("No dataset loaded")
             throw AppError.noLoadedDataset
         }
-
+        
         return axisInfo.getDomain()
     }
     
@@ -216,19 +218,21 @@ class DataChartModel: ObservableObject{
         
         return axisInfo
     }
+    
     /// chatGPT generated function to return a number value as a double
     private func asDouble(_ value: Any?) throws -> Double {
         switch value {
         case let d as Double: return d
         case let i as Int:    return Double(i)
         case let f as Float:  return Double(f)
-        //if we are missing a value then return NaN
+            //if we are missing a value then return NaN
         case Optional<Any>.none, is NSNull:
             return Double.nan
-        //throw internalStateError we should only be calling this function on values we know will be an Int Double or Float
+            //throw internalStateError we should only be calling this function on values we know will be an Int Double or Float
         default:
             Log.Model.fault("Non-numeric type - we should have already filtered these columns out")
             throw AppError.internalStateError
         }
     }
+    
 }
