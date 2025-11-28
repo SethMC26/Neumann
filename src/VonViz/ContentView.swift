@@ -37,14 +37,27 @@ struct ContentView: View {
     @State private var alertMessage: String?
     /// Show settings sheet
     @State private var showingSettings = false
+    /// Show user manual sheet
+    @State private var showingUserManual = false
     
     /// toolBar view with all main buttons of our app
     var toolBarContent: some View {
         HStack {
-            
+            // User Manual button moved to the far left
+            Button {
+                showingUserManual = true
+            } label: {
+                Image(systemName: "book")
+                    .imageScale(.large)
+                    .accessibilityLabel("User Manual")
+            }
+            .padding(.trailing, 8)
+
+            // Choose CSV File button (LoadButton) now comes after User Manual
             LoadButton(model: dcModel) { message in
                 alertMessage = message
             }
+
             // Axis menus only if model has headers
             if !dcModel.headers.isEmpty {
                 // X axis selector
@@ -52,7 +65,7 @@ struct ContentView: View {
                 AxisButton(model: dcModel, axis: .y)
                 AxisButton(model: dcModel, axis: .z)
             }
-            // Add settings button at end
+            // Settings button
             Button {
                 showingSettings = true
             } label: {
@@ -68,15 +81,19 @@ struct ContentView: View {
     var dataChart : some View {
         VStack {
             if !dcModel.rows.isEmpty {
-                Chart(model: dcModel)
-                    .offset(z: 100)
-                    .zIndex(0)
-                    .frame(width: 1000, height: 1000, alignment: .center)
-                    .frame(depth: 1000, alignment: .back)
-                    .scaleEffect(2)
-                    .scaledToFit3D()
-                    .padding(100)
-                    .layoutPriority(10.0)
+                if #available(visionOS 26.0, *) {
+                    Chart(model: dcModel)
+                        .offset(z: 100)
+                        .zIndex(0)
+                        .frame(width: 1000, height: 1000, alignment: .center)
+                        .frame(depth: 1000, alignment: .back)
+                        .scaleEffect(2)
+                        .scaledToFit3D()
+                        .padding(100)
+                        .layoutPriority(10.0)
+                } else {
+                    // Fallback on earlier versions
+                }
             }
             else {
                 ContentUnavailableView("No data yet", systemImage: "tray")
@@ -93,24 +110,29 @@ struct ContentView: View {
                 )) {
                     Button("OK", role: .cancel) { alertMessage = nil }
                 }
+                // Present Settings
                 .sheet(isPresented: $showingSettings) {
                     SettingsSheet(model: dcModel)
+                        .presentationDetents([.medium, .large])
+                }
+                // Present User Manual
+                .sheet(isPresented: $showingUserManual) {
+                    UserManual()
                         .presentationDetents([.medium, .large])
                 }
         }
     }
            
-            var funcChart : some View {
-                FuncChart(model: fModel, initFunc: ContentView.initFunc)
-                    .tabItem{
-                        Text("Surface Plot")
-                    }
-                
+    var funcChart : some View {
+        FuncChart(model: fModel, initFunc: ContentView.initFunc)
+            .tabItem{
+                Text("Surface Plot")
             }
+    }
             
-            var body: some View {
-                //tab view to switch between data visualization and function visualization
-                TabView {
+    var body: some View {
+        //tab view to switch between data visualization and function visualization
+        TabView {
             dataChart
                 //added the following framing to avoid clipping
                 .offset(z: -350)
