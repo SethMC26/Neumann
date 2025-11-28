@@ -34,8 +34,8 @@ struct FuncChart : View {
     var chart : some View {
         Chart3D() {
             let ast = model.ast
-                
-            SurfacePlot(x: "x", y: "z", z: "y", ) { x, y in
+            
+            SurfacePlot(x: "x", y: "z", z: "y") { x, y in
                 do {
                     return try ast.eval(x, y)
                 }
@@ -45,25 +45,34 @@ struct FuncChart : View {
                 }
             }
             .foregroundStyle(.heightBased)
-        }
-        ///since x/y/yAxis is a publish var we will rerender everytime it is updated
-        .chartXAxisLabel("x")
-        .chartXScale(domain: model.xAxis.getDomain())
-        .chartXAxis {
-            AxisMarks(values: .stride(by: model.xAxis.steps))
-        }
-        //y and z is purposefully switch to match example math graphs
-        .chartYAxisLabel("z")
-        .chartYScale(domain: model.zAxis.getDomain())
-        .chartYAxis {
-            AxisMarks(values: .stride(by: model.zAxis.steps))
-        }
-        .chartZAxisLabel("y")
-        .chartZScale(domain: model.yAxis.getDomain())
-        .chartZAxis {
-            AxisMarks(values: .stride(by: model.yAxis.steps))
+            ///since x/y/yAxis is a publish var we will rerender everytime it is updated
+            .chartXAxisLabel("x")
+            .chartXScale(domain: model.xAxis.getDomain())
+            .chartXAxis {
+                AxisMarks(values: .stride(by: model.xAxis.steps))
+            }
+            //y and z is purposefully switch to match example math graphs
+            .chartYAxisLabel("z")
+            .chartYScale(domain: model.zAxis.getDomain())
+            .chartYAxis {
+                AxisMarks(values: .stride(by: model.zAxis.steps))
+            }
+            .chartZAxisLabel("y")
+            .chartZScale(domain: model.yAxis.getDomain())
+            .chartZAxis {
+                AxisMarks(values: .stride(by: model.yAxis.steps))
+            }
+            //        } else {
+            VStack(spacing: 8) {
+                Text("3D Surface Plot requires visionOS 26.0 or later.")
+                Text("Update your system to view the chart.")
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         }
     }
+    
+    
     
     //COMPLETELY VIBE CODED WITH CHATGPT LIKELY NEEDS TO BE FIXED
     //yolo it looks good and works we gonna ship

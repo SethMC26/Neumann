@@ -62,30 +62,30 @@ struct Chart : View {
         }()
 
         //add chart with rows, labels and scale
-        Chart3D(model.rows) { (row: Row) in
-            PointMark(
-                x: .value(xLabel, row.x),
-                y: .value(yLabel, row.y),
-                z: .value(zLabel, row.z)
-            )
+            Chart3D(model.rows) { (row: Row) in
+                PointMark(
+                    x: .value(xLabel, row.x),
+                    y: .value(yLabel, row.y),
+                    z: .value(zLabel, row.z)
+                )
+            }
+            .chartXAxisLabel(xLabel)
+            .chartYAxisLabel(yLabel)
+            .chartZAxisLabel(zLabel)
+            .chartXScale(domain: xDom, range: .plotDimension(padding: 750))
+            .chartYScale(domain: yDom, range: .plotDimension(padding: 750))
+            .chartZScale(domain: zDom, range: .plotDimension(padding: 750))
+            // Use steps to control tick marks when provided
+            .chartXAxis {
+                // If xTicks is empty, Charts will auto-generate marks
+                AxisMarks(values: xTicks)
+            }
+            .chartYAxis {
+                AxisMarks(values: yTicks)
+            }
+            .chartZAxis {
+                AxisMarks(values: zTicks)
+            }
         }
-        .chartXAxisLabel(xLabel)
-        .chartYAxisLabel(yLabel)
-        .chartZAxisLabel(zLabel)
-        .chartXScale(domain: xDom, range: .plotDimension(padding: 750))
-        .chartYScale(domain: yDom, range: .plotDimension(padding: 750))
-        .chartZScale(domain: zDom, range: .plotDimension(padding: 750))
-        // Use steps to control tick marks when provided
-        .chartXAxis {
-            // If xTicks is empty, Charts will auto-generate marks
-            AxisMarks(values: xTicks)
-        }
-        .chartYAxis {
-            AxisMarks(values: yTicks)
-        }
-        .chartZAxis {
-            AxisMarks(values: zTicks)
-        }
-        
     }
-}
+
