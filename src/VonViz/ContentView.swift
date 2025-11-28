@@ -81,21 +81,16 @@ struct ContentView: View {
     var dataChart : some View {
         VStack {
             if !dcModel.rows.isEmpty {
-                if #available(visionOS 26.0, *) {
                     Chart(model: dcModel)
                         .offset(z: 100)
                         .zIndex(0)
                         .frame(width: 1000, height: 1000, alignment: .center)
                         .frame(depth: 1000, alignment: .back)
                         .scaleEffect(2)
-                        .scaledToFit3D()
+//                        .scaledToFit3D()
                         .padding(100)
                         .layoutPriority(10.0)
-                } else {
-                    // Fallback on earlier versions
-                }
-            }
-            else {
+            } else {
                 ContentUnavailableView("No data yet", systemImage: "tray")
                     .offset(z: 300)
                     .zIndex(1)

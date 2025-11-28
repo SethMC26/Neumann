@@ -62,7 +62,6 @@ struct Chart : View {
         }()
 
         //add chart with rows, labels and scale
-        if #available(visionOS 26.0, *) {
             Chart3D(model.rows) { (row: Row) in
                 PointMark(
                     x: .value(xLabel, row.x),
@@ -87,9 +86,6 @@ struct Chart : View {
             .chartZAxis {
                 AxisMarks(values: zTicks)
             }
-        } else {
-            // Fallback on earlier versions
         }
-        
     }
-}
+
