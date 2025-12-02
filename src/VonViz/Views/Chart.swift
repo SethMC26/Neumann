@@ -22,13 +22,13 @@ import Charts
 struct Chart: View {
     /// Model with backend data
     @ObservedObject var model: DataChartModel
-
+    
     /// Create a new Chart
     /// - Parameter model: Model for chart to display
     init(model: DataChartModel) {
         self.model = model
     }
-
+    
     var body: some View {
         // Attempt to get the string for each axis, or use placeholder if not set
         let xLabel: String = "X: \(model.getAxisHeader(axisToGet: .x) ?? "X Axis")"
@@ -58,15 +58,16 @@ struct Chart: View {
             guard let info = zInfo, info.steps > 0 else { return [] }
             return Array(stride(from: info.min, through: info.max, by: info.steps))
         }()
-    }
-    
-    //add chart with rows, labels and scale
-            Chart3D(model.rows) { (row: Row) in
-                PointMark(
-                    x: .value(xLabel, row.x),
-                    y: .value(yLabel, row.y),
-                    z: .value(zLabel, row.z)
-                )
+        
+        
+        //add chart with rows, labels and scale
+        Chart3D(model.rows) { (row: Row) in
+            PointMark(
+                x: .value(xLabel, row.x),
+                y: .value(yLabel, row.y),
+                z: .value(zLabel, row.z)
+            )
+        }
             .chartXAxisLabel(xLabel)
             .chartYAxisLabel(yLabel)
             .chartZAxisLabel(zLabel)
@@ -87,3 +88,4 @@ struct Chart: View {
             
         }
     }
+
