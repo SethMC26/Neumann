@@ -68,12 +68,6 @@ struct UserManual: View {
                         }
                     }
                 }
-
-//                Section(header: Text("Loading Data (CSV)")) {
-//                    Text("Use “Choose CSV File” in the toolbar to import data. The app will automatically detect numeric columns and map the first three to X, Y, and Z axes. If fewer than three numeric columns are present, the file cannot be visualized.")
-//                        .font(.callout)
-//                        .fixedSize(horizontal: false, vertical: true)
-//                }
             }
             .navigationTitle("User Manual")
             .toolbar {

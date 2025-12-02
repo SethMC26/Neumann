@@ -87,7 +87,7 @@ struct ContentView: View {
                         .frame(width: 1000, height: 1000, alignment: .center)
                         .frame(depth: 1000, alignment: .back)
                         .scaleEffect(2)
-//                        .scaledToFit3D()
+                        .scaledToFit3D()
                         .padding(100)
                         .layoutPriority(10.0)
             } else {
