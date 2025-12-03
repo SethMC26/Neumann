@@ -47,7 +47,7 @@ struct ContentView: View {
             Button {
                 showingUserManual = true
             } label: {
-                Image(systemName: "book")
+                Image(systemName: "doc.text")
                     .imageScale(.large)
                     .accessibilityLabel("User Manual")
             }
