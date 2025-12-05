@@ -32,38 +32,40 @@ struct FuncChart : View {
     }
     
     var chart : some View {
-        Chart3D() {
-            let ast = model.ast
-                
-            SurfacePlot(x: "x", y: "z", z: "y", ) { x, y in
-                do {
-                    return try ast.eval(x, y)
+            Chart3D() {
+                let ast = model.ast
+                    
+                SurfacePlot(x: "x", y: "z", z: "y", ) { x, y in
+                    do {
+                        return try ast.eval(x, y)
+                    }
+                    catch {
+                        Log.Model.error("Surface plot cannot eval correctly")
+                        return 0.0
+                    }
                 }
-                catch {
-                    Log.Model.error("Surface plot cannot eval correctly")
-                    return 0.0
-                }
+                .foregroundStyle(.heightBased)
             }
-            .foregroundStyle(.heightBased)
+            ///since x/y/yAxis is a publish var we will rerender everytime it is updated
+            .chartXAxisLabel("x")
+            .chartXScale(domain: model.xAxis.getDomain())
+            .chartXAxis {
+                AxisMarks(values: .stride(by: model.xAxis.steps))
+            }
+            //y and z is purposefully switch to match example math graphs
+            .chartYAxisLabel("z")
+            .chartYScale(domain: model.zAxis.getDomain())
+            .chartYAxis {
+                AxisMarks(values: .stride(by: model.zAxis.steps))
+            }
+            .chartZAxisLabel("y")
+            .chartZScale(domain: model.yAxis.getDomain())
+            .chartZAxis {
+                AxisMarks(values: .stride(by: model.yAxis.steps))
+            }
         }
-        ///since x/y/yAxis is a publish var we will rerender everytime it is updated
-        .chartXAxisLabel("x")
-        .chartXScale(domain: model.xAxis.getDomain())
-        .chartXAxis {
-            AxisMarks(values: .stride(by: model.xAxis.steps))
-        }
-        //y and z is purposefully switch to match example math graphs
-        .chartYAxisLabel("z")
-        .chartYScale(domain: model.zAxis.getDomain())
-        .chartYAxis {
-            AxisMarks(values: .stride(by: model.zAxis.steps))
-        }
-        .chartZAxisLabel("y")
-        .chartZScale(domain: model.yAxis.getDomain())
-        .chartZAxis {
-            AxisMarks(values: .stride(by: model.yAxis.steps))
-        }
-    }
+
+    
     
     //COMPLETELY VIBE CODED WITH CHATGPT LIKELY NEEDS TO BE FIXED
     //yolo it looks good and works we gonna ship
