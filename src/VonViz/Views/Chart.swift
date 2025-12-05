@@ -68,6 +68,7 @@ struct Chart : View {
                 y: .value(yLabel, row.y),
                 z: .value(zLabel, row.z)
             )
+            .foregroundStyle(by: .value(model.currCatHeader ?? "", row.category ?? ""))
         }
         .chartXAxisLabel(xLabel)
         .chartYAxisLabel(yLabel)
@@ -86,6 +87,7 @@ struct Chart : View {
         .chartZAxis {
             AxisMarks(values: zTicks)
         }
-        
+        //not working for some fucked reason
+        .chartLegend()
     }
 }
