@@ -21,22 +21,24 @@ import TabularData
 
 /// AppModel is the model for the App and main model for the controllers of the app to interact with.
 class DataChartModel: ObservableObject{
+    /// All headers of columns that can be changed
+    @Published var headers: [String] = []
+    /// Rows of dataset updated when new file loaded or axis to display is changed
+    @Published var rows: [Row] = []
+    /// Display limit of chat
+    @Published var displayLimit: Int = 1000
+    /// all possible category headers
+    @Published var catHeaders: [String] = []
+    /// Current selected cateogry header
+    @Published var currCatHeader: String? = nil
     /// Data that the user has imported, nil is none has been imported yet
     private var data: DataFrame? = nil
-    @Published var displayLimit: Int = 1000
-    
     /// Map of axis and header associated with axis to display
     private var axes: [Axis: AxisInfo] = [
         .x : AxisInfo(header: "X Axis"),
         .y : AxisInfo(header: "Y Axis"),
         .z : AxisInfo(header: "Z Axis")
     ]
-    
-    
-    /// All headers of columns that can be changed
-    @Published var headers: [String] = []
-    /// Rows of dataset updated when new file loaded or axis to display is changed
-    @Published var rows: [Row] = []
         
     /// Set an Axis to be associated with a particular header
     /// - Parameters:
@@ -72,6 +74,8 @@ class DataChartModel: ObservableObject{
         data = try DataFrame(contentsOfCSVFile: file)
         rows = []
         headers = []
+        catHeaders = []
+        currCatHeader = nil
         //reset axes map
         axes = [
             .x : AxisInfo(),
@@ -86,6 +90,8 @@ class DataChartModel: ObservableObject{
         
         // names of the columns with numbers that a user can select
         var col_names: [String] = []
+        //names of categorical columns(string types) for categorical vars
+        var cat_col_names: [String] = []
         
         Log.Model.debug("Getting headers and doing type conversions to doubles ")
         //attempt to automatically set axes
@@ -97,6 +103,10 @@ class DataChartModel: ObservableObject{
                 col_names.append(col.name)
             }
             
+            if type == String.self {
+                cat_col_names.append(col.name)
+            }
+            
         }
         
         // if there are less than 3 columns with numbers in them dataset cannot be loaded
@@ -106,6 +116,7 @@ class DataChartModel: ObservableObject{
         }
         
         headers = col_names
+        catHeaders = cat_col_names
         
         //set displayed data to first three applicable columns
         try axes[.x]?.setValues(header: col_names[0], column: df[col_names[0]])
@@ -152,7 +163,13 @@ class DataChartModel: ObservableObject{
                 Log.Model.debug("Row contains a NaN skipping")
                 continue
             }
-            newRows.append(Row(id: data.index, x:  colOne, y:  colTwo, z: colThree))
+            
+            //attempt to get the categorical variable only if it is set and exists in this row
+            var category: String? = nil
+            if let _currCatHeader: String = currCatHeader {
+                category = data[_currCatHeader] as? String
+            }
+            newRows.append(Row(id: data.index, x:  colOne, y:  colTwo, z: colThree, category: category))
             
             if newRows.count > displayLimit {
                 Log.Model.info("Reached display limit \(displayLimit)")

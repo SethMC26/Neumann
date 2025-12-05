@@ -45,6 +45,36 @@ struct ContentView: View {
             LoadButton(model: dcModel) { message in
                 alertMessage = message
             }
+            // Category selector with a single Picker (scales to many items)
+            //ChatGPT generated button below
+            if !dcModel.catHeaders.isEmpty {
+                Menu {
+                    // Single picker bound to optional selection
+                    Picker("Category", selection: Binding<String?>(
+                        get: { dcModel.currCatHeader },
+                        set: { newValue in
+                            dcModel.currCatHeader = newValue
+                            do {
+                                try dcModel.render()
+                            } catch {
+                                Log.Model.error("Error in setting category: \(error)")
+                            }
+                        }
+                    )) {
+                        // Clear option
+                        Text("None").tag(nil as String?)
+                        // All categorical headers
+                        ForEach(dcModel.catHeaders, id: \.self) { header in
+                            Text(header).tag(Optional(header))
+                        }
+                    }
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "tag")
+                        Text(dcModel.currCatHeader ?? "Category")
+                    }
+                }
+            }
             // Axis menus only if model has headers
             if !dcModel.headers.isEmpty {
                 // X axis selector
@@ -52,6 +82,7 @@ struct ContentView: View {
                 AxisButton(model: dcModel, axis: .y)
                 AxisButton(model: dcModel, axis: .z)
             }
+            
             // Add settings button at end
             Button {
                 showingSettings = true
