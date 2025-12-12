@@ -1,3 +1,4 @@
+
 import SwiftUI
 import UniformTypeIdentifiers
 import QuickLook
@@ -28,7 +29,7 @@ struct UserManual: View {
                         Text("Tap the Choose CSV File button in the toolbar to select and import a CSV file. Once loaded, your data will appear in the chart area.")
                             .font(.callout)
                             .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: true, vertical: true)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     
                     Group {
@@ -48,7 +49,7 @@ struct UserManual: View {
                         Text("Tap above to see the full user manual and documentation for the app.")
                             .font(.callout)
                             .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: true, vertical: true)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     
                     Group {
@@ -92,19 +93,21 @@ struct UserManual: View {
                     }
                 }
             }
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Exit") { dismiss() }
-                    Button {
-                        showingHelper = true
-                    } label: {
-                        Image(systemName: "questionmark")
-                            .imageScale(.large)
-                            .accessibilityLabel("Surface Plot Guide")
-                    }
-                }
-            }
             .navigationTitle("User Manual")
+            Button("Exit") { dismiss() }
+            .toolbar {
+               ToolbarItem(placement: .confirmationAction) {
+                   Button {
+                       showingHelper = true
+                   } label: {
+                       Image(systemName: "questionmark")
+                           .imageScale(.large)
+                           .accessibilityLabel("Surface Plot Guide")
+                   }
+               }
+           }
+
+            
             // Present a popover with detailed instructions when showingHelper is true
             .popover(isPresented: $showingHelper, arrowEdge: .top) {
                 Spacer()
