@@ -13,20 +13,9 @@ struct UserManual: View {
             Form {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Data Graph User Guide")
-                        .font(.largeTitle)
+                        .font(.title2) // <--- changed from .largeTitle
                         .frame(maxWidth: .infinity, alignment: .center)
                         .bold()
-                        .padding(.top, 4)
-                    
-                    Group {
-                        Text("Choose CSV File Button")
-                            .font(.title)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                        Text("Tap the document icon in the toolbar to select and import a CSV file. Once loaded, your data will appear in the chart area.")
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: true, vertical: true)
-                    }
                     
                     Group {
                         Text("Choose CSV File Button")
@@ -38,12 +27,21 @@ struct UserManual: View {
                             .fixedSize(horizontal: true, vertical: true)
                     }
                     
+                    Group {
+                        Text("User Manual Button")
+                            .font(.title)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                        Text("Tap the document icon in the toolbar to see how all of the features and buttons in the AVP app work ")
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: true, vertical: true)
+                    }
                     
                     Group {
                         Text("Helper Button")
                             .font(.title)
                             .frame(maxWidth: .infinity, alignment: .center)
-                        Text("Tap the document icon in the toolbar to select and import a CSV file. Once loaded, your data will appear in the chart area.")
+                        Text("Tap the question mark icon the User Manual section to leern how the syntax grammars work")
                             .font(.callout)
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
@@ -53,7 +51,7 @@ struct UserManual: View {
                         Text("X")
                             .font(.title)
                             .frame(maxWidth: .infinity, alignment: .center)
-                        Text("Tap the document icon in the toolbar to select and import a CSV file. Once loaded, your data will appear in the chart area.")
+                        Text("Tap the X axix button to make changes to the graphs X axis ")
                             .font(.callout)
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
@@ -63,7 +61,7 @@ struct UserManual: View {
                         Text("Y")
                             .font(.title)
                             .frame(maxWidth: .infinity, alignment: .center)
-                        Text("After importing, use the X, Y, and Z axis buttons to select which data column is mapped to each axis. In the popups, you can also set the minimum, maximum, and step size for each axis to adjust the chart's scale.")
+                        Text("Tap the Y axix button to make changes to the graphs X axis ")
                             .font(.callout)
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
@@ -73,7 +71,7 @@ struct UserManual: View {
                         Text("Z")
                             .font(.title)
                             .frame(maxWidth: .infinity, alignment: .center)
-                        Text("Tap the gear icon in the toolbar to open settings. Here you can adjust general display preferences and fine-tune how your data is visualized.")
+                        Text("Tap the Y axix button to make changes to the graphs X axis ")
                             .font(.callout)
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
