@@ -45,6 +45,7 @@ struct Chart: View {
         let yDom: ClosedRange<Double> = (try? model.getAxisRange(axis: .y)) ?? (-50...50)
         let zDom: ClosedRange<Double> = (try? model.getAxisRange(axis: .z)) ?? (-50...50)
         
+        //chatgpt generated ticks for chart 
         // Tick values from steps (if <= 0, let Charts auto-pick ticks by giving an empty list)
         let xTicks: [Double] = {
             guard let info = xInfo, info.steps > 0 else { return [] }
@@ -67,6 +68,7 @@ struct Chart: View {
                 y: .value(yLabel, row.y),
                 z: .value(zLabel, row.z)
             )
+            .foregroundStyle(by: .value(model.currCatHeader ?? "", row.category ?? ""))
         }
             .chartXAxisLabel(xLabel)
             .chartYAxisLabel(yLabel)
@@ -85,7 +87,8 @@ struct Chart: View {
             .chartZAxis {
                 AxisMarks(values: zTicks)
             }
-            
+            //not working for some fucked reason
+            .chartLegend()
         }
     }
 
