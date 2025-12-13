@@ -49,6 +49,13 @@ struct LoadButton : View {
             case .success(let urls):
                 if let url = urls.first {
                     Log.UserView.debug("Picked file: \(url)")
+                    // Some File Provider locations require security-scoped access even when returned by the picker.
+                    let needsAccess = url.startAccessingSecurityScopedResource()
+                    defer {
+                        if needsAccess {
+                            url.stopAccessingSecurityScopedResource()
+                        }
+                    }
                     do {
                         try model.ingestFile(file: url)
                     } catch let error as AppError {
@@ -83,4 +90,3 @@ struct LoadButton : View {
         }
     }
 }
-

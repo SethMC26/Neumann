@@ -88,90 +88,83 @@ struct FuncChart : View {
     ///toolbar vibed coded with ChatGPT looks good and function wells
     // if the hackathon taught me one thing its vibe coding UI works
     var toolbar: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            LabeledContent("Function: ") {
-                HStack {
-                    // Tappable display for current function; opens popover
-                    Text(function.isEmpty ? "Tap to enter function" : function)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(8)
-                        .onTapGesture { showKeyboard.toggle() }
-                        .popover(isPresented: $showKeyboard, attachmentAnchor: .rect(.bounds), arrowEdge: .bottom) {
-                            // Larger, fully visible keyboard; shifted left to avoid right-edge clipping
-                            MathKeyboardView(text: $function, onEvaluate: {
-                                do {
-                                    try model.setInput(function)
-                                    showKeyboard = false
-                                } catch {
-                                    // Keep the keyboard open so the user can fix the input
-                                    Log.UserView.error("Error updating surfaceplot \(error)")
-                                }
-                            })
-                            .padding(12)
-                            .frame(width: 900, height: 560)  // wider & taller to ensure full visibility
-                            //.offset(x: -220)                 // shift left so right side isn't clipped
-                            .offset(z: 1200)                 // keep it closer to the user
-                            .offset(y: 50)                   // move down a bit
+        VStack(alignment: .leading, spacing: 25) {
+            Text(function.isEmpty ? "Tap to enter function" : function)
+                .frame(maxWidth: 1000, alignment: .leading)
+                .background(Color.gray.opacity(0.2))
+                .padding()
+                .cornerRadius(8)
+                .onTapGesture { showKeyboard.toggle() }
+                .popover(isPresented: $showKeyboard/*, attachmentAnchor: .rect(.bounds), arrowEdge: .bottom */) {
+                    // Larger, fully visible keyboard; shifted left to avoid right-edge clipping
+                    MathKeyboardView(text: $function, onEvaluate: {
+                        do {
+                            try model.setInput(function)
+                            showKeyboard = false
+                        } catch {
+                            // Keep the keyboard open so the user can fix the input
+                            Log.UserView.error("Error updating surfaceplot \(error)")
+                            showKeyboard = false
                         }
-                        .layoutPriority(1) // keep this from collapsing
+                    })
+                    .padding(12)
+                    .background(Color.gray.opacity(0.9))
+                    .frame(width: 900, height: 560)  // wider & taller to ensure full visibility
+                    //.offset(x: -220)                 // shift left so right side isn't clipped
+                    .offset(z: 600)                 // keep it closer to the user
+                    .offset(y: 50)                   // move down a bit
+                    }
+                .layoutPriority(1) // keep this from collapsing
+                // Initial load + update when axis changes
+                .onAppear { loadFields(from: axis) }
+                .onChange(of: axis) {
+                    loadFields(from: axis)
                 }
-            }
-            // Initial load + update when axis changes
-            .onAppear { loadFields(from: axis) }
-            .onChange(of: axis) {
-                loadFields(from: axis)
-            }
             
             // Axis controls below
-            // Wrap in horizontal scroll to avoid squeezing on compact widths
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 10) {
-                    Picker("Axis", selection: $axis) {
-                        Text("X").tag(Axis.x)
-                        Text("Y").tag(Axis.y)
-                        Text("Z").tag(Axis.z)
-                    }
-                    .pickerStyle(.segmented)
-                    .frame(width: 150)
-                    
-                    HStack(spacing: 5) {
-                        Text("Min:")
-                        TextField("", value: $minVal, format: .number)
-                            .frame(width: 80)
-                            .keyboardType(.decimalPad)
-                            .textFieldStyle(.roundedBorder)
-                    }
-                    
-                    HStack(spacing: 5) {
-                        Text("Max:")
-                        TextField("", value: $maxVal, format: .number)
-                            .frame(width: 80)
-                            .keyboardType(.decimalPad)
-                            .textFieldStyle(.roundedBorder)
-                    }
-                    
-                    HStack(spacing: 5) {
-                        Text("Steps:")
-                        TextField("", value: $steps, format: .number)
-                            .frame(width: 80)
-                            .keyboardType(.decimalPad)
-                            .textFieldStyle(.roundedBorder)
-                    }
-                    
-                    Button("Apply") {
-                        try? model.setAxis(axis: axis, max: maxVal, min: minVal, steps: steps)
-                        //todo add error handing if min < max right now the model will throw and we silently fail
-                        // we need to let the user know what they did wrong
-                        
-                        // Optional: reload from model in case it clamps/normalizes
-                        loadFields(from: axis)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .frame(minWidth: 90)
+            HStack(spacing: 10) {
+                Picker("Axis", selection: $axis) {
+                    Text("X").tag(Axis.x)
+                    Text("Y").tag(Axis.y)
+                    Text("Z").tag(Axis.z)
                 }
-                .padding(.vertical, 2)
+                .pickerStyle(.segmented)
+                .frame(width: 150)
+                
+                HStack(spacing: 5) {
+                    Text("Min:")
+                    TextField("", value: $minVal, format: .number)
+                        .frame(width: 80)
+                        .keyboardType(.decimalPad)
+                        .textFieldStyle(.roundedBorder)
+                }
+                
+                HStack(spacing: 5) {
+                    Text("Max:")
+                    TextField("", value: $maxVal, format: .number)
+                        .frame(width: 80)
+                        .keyboardType(.decimalPad)
+                        .textFieldStyle(.roundedBorder)
+                }
+                
+                HStack(spacing: 5) {
+                    Text("Steps:")
+                    TextField("", value: $steps, format: .number)
+                        .frame(width: 80)
+                        .keyboardType(.decimalPad)
+                        .textFieldStyle(.roundedBorder)
+                }
+                
+                Button("Apply") {
+                    try? model.setAxis(axis: axis, max: maxVal, min: minVal, steps: steps)
+                    //todo add error handing if min < max right now the model will throw and we silently fail
+                    // we need to let the user know what they did wrong
+                    
+                    // Optional: reload from model in case it clamps/normalizes
+                    loadFields(from: axis)
+                }
+                .buttonStyle(.borderedProminent)
+                .frame(minWidth: 90)
             }
         }
     }
@@ -179,7 +172,9 @@ struct FuncChart : View {
     var body : some View {
         VStack {
             self.chart
+                .offset(z: -200)
             self.toolbar
+                .offset(z: 600)
         }
         .padding()
     }
