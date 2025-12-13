@@ -54,7 +54,6 @@ class DataChartModel: ObservableObject{
         }
         
         try axes[axisToSet]?.setValues(header: header, column: df[header])
-        try render()
     }
     
     /// Get the Header associated with a certain Axis
@@ -223,7 +222,6 @@ class DataChartModel: ObservableObject{
         
         //add back to map structs are pass by copy
         axes[axis] = axisInfo
-        try render()
     }
     
     func getAxisInfo(axis: Axis) throws -> AxisInfo{
