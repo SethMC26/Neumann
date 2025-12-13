@@ -40,4 +40,5 @@ struct Row : Identifiable {
     let x: Double
     let y: Double
     let z: Double
+    let category: String?
 }
