@@ -8,26 +8,31 @@
 import SwiftUI
 
 struct Helper: View {
-    
+    @State private var showingHelper = true
+    @State private var showingManualWeb = false
+
+    // Reuse the same manual URL used elsewhere
+    private let manualURL = URL(string: "https://docs.google.com/document/d/1ao8-fAkPDrW8zezHz3fVqypJ6h8nPMJtJ3KifFBYjvQ/edit?tab=t.0")!
+
     var body: some View {
-        toolBarContent
-    }
-    
-    var toolBarContent: some View {
-        HStack {
-            // User Manual button moved to the far left
-            Button {
-                // showingUserManual = true // <-- You must provide this state from outside if needed
-            } label: {
-                Image(systemName: "?")
-                    .imageScale(.large)
-                    .accessibilityLabel("Surface Plot Guide")
+        // Present the guide content directly. You can embed this in a popover/sheet where Helper is used.
+        Group {
+            if showingHelper {
+                HelperGuideView(
+                    onOpenManual: { showingManualWeb = true },
+                    onClose: { showingHelper = false }
+                )
+                .frame(width: 500, height: 700)
+            } else {
+                EmptyView()
             }
-            .padding(.trailing, 8)
+        }
+        .sheet(isPresented: $showingManualWeb) {
+            SafariView(url: manualURL)
         }
     }
-}
-    //// MARK: - HelperGuideView: The guide content as a reusable view with close/manual actions
+
+    // MARK: - HelperGuideView: The guide content as a reusable view with close/manual actions
     struct HelperGuideView: View {
         var onOpenManual: () -> Void
         var onClose: () -> Void
@@ -43,7 +48,6 @@ struct Helper: View {
                             .bold()
                             .padding(.top)
                             .fixedSize(horizontal: true, vertical: true)
-
 
                         GroupBox(label: Label("What is the Functional Graph?", systemImage: "function")) {
                             Text("""
@@ -97,8 +101,8 @@ struct Helper: View {
                             VStack(alignment: .center, spacing: 16) {
                                 Text("1. Tap the large function field above the graph (shows your current formula).")
                                 Text("2. Use the math keyboard to type or edit your function.")
-                                Text("3. Tap **Evaluate** to update the plot, or **Clear** to start over.")
-                                Text("4. Use the **Delete** button to erase symbols one at a time.")
+                                Text("3. Tap Evaluate to update the plot, or Clear to start over.")
+                                Text("4. Use the Delete button to erase symbols one at a time.")
                                 Text("If the input is invalid, you'll see an error and can fix your formula.")
                                     .foregroundStyle(.secondary)
                             }
@@ -111,8 +115,8 @@ struct Helper: View {
                                 Text(
                                     """
                                     1. Use the Axis picker (“X”, “Y”, “Z”) beneath the function field to select an axis.
-                                    2. Edit **Min**, **Max**, and **Steps** fields to set the axis range and step size.
-                                    3. Tap **Apply** to update the graph.
+                                    2. Edit Min, Max, and Steps fields to set the axis range and step size.
+                                    3. Tap Apply to update the graph.
 
                                     - The plot will instantly refresh using your new axis settings.
                                     - Make sure Min < Max for each axis.
@@ -122,13 +126,20 @@ struct Helper: View {
                                 .foregroundStyle(.primary)
                             }
                         }
-                    }
-                    Button("Close", action: onClose)
+
+                        HStack(spacing: 12) {
+                            Button("Open Manual") { onOpenManual() }
+                                .buttonStyle(.borderedProminent)
+                            Button("Close", action: onClose)
+                                .buttonStyle(.bordered)
+                        }
                         .frame(maxWidth: .infinity)
-                        .padding()
-                        .buttonStyle(.borderedProminent)
+                        .padding(.vertical)
+                    }
+                    .padding()
+                    .frame(maxWidth: 500)
                 }
-                .frame(maxWidth: 500, maxHeight: 700)
             }
         }
     }
+}
