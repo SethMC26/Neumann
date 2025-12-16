@@ -140,6 +140,7 @@ struct AxisButton: View {
                     // Apply updates
                     do {
                         try model.setAxisDomain(axis: axis, min: minToSend,max: maxToSend, steps: stepsToSend)
+                        try model.render()
                     }
                     catch {
                         //todo add better error handling and user feedback
