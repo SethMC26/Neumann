@@ -128,7 +128,7 @@ struct Helper: View {
                         }
 
                         HStack(spacing: 12) {
-                            Button("Open Manual") { onOpenManual() }
+                            Button("FuncChart") { onOpenManual() }
                                 .buttonStyle(.borderedProminent)
                             Button("Close", action: onClose)
                                 .buttonStyle(.bordered)
