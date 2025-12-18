@@ -16,7 +16,7 @@ all built natively for visionOS using SwiftUI and RealityKit.
 
 ## Project Documents
 - **Team Charter**  
-  https://drive.google.com/drive/folders/1CM16wybFIhSwVYIqdR9js68r6Z8kbevn  
+  https://docs.google.com/document/d/1Z1tSg39N_xnam7r9qQaTl4dNRwwwGKFiFNJWs4M-CiI/edit?usp=sharing
 - **Requirements Document**  
   https://docs.google.com/document/d/1di0hmVVpLvBlKFenA-8kkR31mgci4VnPpNHRg9MaDP0  
 - **Functional Specification**  
@@ -27,7 +27,8 @@ all built natively for visionOS using SwiftUI and RealityKit.
   https://docs.google.com/document/d/11fTf_E0Clvp9A4P2IAW9uu3e8qef3HVIG9u9lEMx0Hk/edit?usp=sharing
 - **Poster**  
   https://www.canva.com/design/DAG6ZHPJUC8/A-RY883y2lH5J_84XUorOg/edit  
-
+**presentation**
+  https://www.canva.com/design/DAG7aiiZ0u0/vUppF1caZCLd3sxKoDP6Kw/edit?utm_content=DAG7aiiZ0u0&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 ---
 
 ## Features
