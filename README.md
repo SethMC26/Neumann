@@ -24,7 +24,7 @@ all built natively for visionOS using SwiftUI and RealityKit.
 - **User Manual**  
   https://docs.google.com/document/d/1ao8-fAkPDrW8zezHz3fVqypJ6h8nPMJtJ3KifFBYjvQ  
 - **Technical Specification**  
-  Included in repository as `Technical Specification.rtf`  
+  https://docs.google.com/document/d/11fTf_E0Clvp9A4P2IAW9uu3e8qef3HVIG9u9lEMx0Hk/edit?usp=sharing
 - **Poster**  
   https://www.canva.com/design/DAG6ZHPJUC8/A-RY883y2lH5J_84XUorOg/edit  
 
